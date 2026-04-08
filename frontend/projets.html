@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <!-- SIDEBAR COMPLETE -->
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link active"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="utilisateurs.html" class="nav-link"><i class="fas fa-users"></i><span>Utilisateurs</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+        <div class="sidebar-footer"><i class="fas fa-database"></i> MongoDB • API REST</div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-folder-open"></i> Gestion des projets</h1>
+            <div class="user-badge">
+                <div class="date-badge" id="currentDate"><i class="fas fa-calendar-alt"></i> <span></span></div>
+                <i class="fas fa-bell"></i> <span>Alice Martin</span>
+                <div class="avatar-mini">AM</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px; text-align: right;">
+            <button id="openAddProjetModal"><i class="fas fa-plus"></i> Nouveau projet</button>
+        </div>
+
+        <div class="card">
+            <table class="data-table" id="projetsTable">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Avancement</th>
+                        <th>Membres</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="projetsList"></tbody>
+            </table>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <h3><i class="fas fa-trello"></i> CollabFlow</h3>
+                    <p>Gestion de projets collaboratifs • Solution Trello-like</p>
+                </div>
+                <div class="footer-contact">
+                    <h4><i class="fas fa-map-marker-alt"></i> Contact</h4>
+                    <div class="contact-item"><i class="fas fa-map-pin"></i> 🇲🇦 Casablanca, Maroc</div>
+                    <div class="contact-item"><i class="fas fa-envelope"></i> contact@collabflow.ma</div>
+                    <div class="contact-item"><i class="fas fa-phone-alt"></i> +212 522 123 456</div>
+                </div>
+                <div class="footer-social">
+                    <h4>Suivez-nous</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CollabFlow - Solutions Digitales | <i class="fas fa-heart"></i> Maroc 🇲🇦</p>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Modal Ajout/Modification -->
+<div id="projetModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Ajouter un projet</h3>
+        <input type="hidden" id="projetId">
+        <input type="text" id="projetNom" placeholder="Nom du projet">
+        <input type="text" id="projetDesc" placeholder="Description">
+        <input type="number" id="projetAvancement" placeholder="Avancement (%)" value="0">
+        <input type="number" id="projetMembres" placeholder="Nombre de membres">
+        <div class="modal-buttons">
+            <button class="secondary" id="closeModal">Annuler</button>
+            <button id="saveProjet">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    // Date du jour
+    document.querySelector('#currentDate span').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    function renderProjets() {
+        const projets = window.app.getProjets();
+        const tbody = document.getElementById('projetsList');
+        tbody.innerHTML = '';
+        projets.forEach(p => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${p.nom}</strong></td>
+                    <td>${p.description || '-'}</td>
+                    <td><progress value="${p.avancement}" max="100" style="width:100px"></progress> ${p.avancement}%</td>
+                    <td>👥 ${p.membres}</td>
+                    <td>
+                        <button class="secondary edit-projet" data-id="${p.id}"><i class="fas fa-edit"></i></button>
+                        <button class="danger delete-projet" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        document.querySelectorAll('.edit-projet').forEach(btn => btn.addEventListener('click', () => openEditProjet(parseInt(btn.dataset.id))));
+        document.querySelectorAll('.delete-projet').forEach(btn => btn.addEventListener('click', () => { if(confirm('Supprimer ce projet ?')) { window.app.supprimerProjet(parseInt(btn.dataset.id)); renderProjets(); } }));
+    }
+
+    function openEditProjet(id) {
+        const projet = window.app.getProjets().find(p => p.id === id);
+        document.getElementById('modalTitle').innerText = 'Modifier le projet';
+        document.getElementById('projetId').value = projet.id;
+        document.getElementById('projetNom').value = projet.nom;
+        document.getElementById('projetDesc').value = projet.description || '';
+        document.getElementById('projetAvancement').value = projet.avancement;
+        document.getElementById('projetMembres').value = projet.membres;
+        document.getElementById('projetModal').style.display = 'flex';
+    }
+
+    document.getElementById('openAddProjetModal').onclick = () => {
+        document.getElementById('modalTitle').innerText = 'Ajouter un projet';
+        document.getElementById('projetId').value = '';
+        document.getElementById('projetNom').value = '';
+        document.getElementById('projetDesc').value = '';
+        document.getElementById('projetAvancement').value = 0;
+        document.getElementById('projetMembres').value = '';
+        document.getElementById('projetModal').style.display = 'flex';
+    };
+    document.getElementById('closeModal').onclick = () => document.getElementById('projetModal').style.display = 'none';
+    document.getElementById('saveProjet').onclick = () => {
+        const id = document.getElementById('projetId').value;
+        const projet = { 
+            nom: document.getElementById('projetNom').value, 
+            description: document.getElementById('projetDesc').value, 
+            avancement: parseInt(document.getElementById('projetAvancement').value), 
+            membres: parseInt(document.getElementById('projetMembres').value) 
+        };
+        if(id) window.app.modifierProjet(parseInt(id), projet);
+        else window.app.ajouterProjet(projet);
+        document.getElementById('projetModal').style.display = 'none';
+        renderProjets();
+    };
+    renderProjets();
+</script>
+</body>
+</html>

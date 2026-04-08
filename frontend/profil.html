@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="utilisateurs.html" class="nav-link"><i class="fas fa-users"></i><span>Utilisateurs</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="profil.html" class="nav-link active"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+        <div class="sidebar-footer"><i class="fas fa-database"></i> MongoDB • API REST</div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-user-circle"></i> Mon profil</h1>
+            <div class="user-badge"><div class="date-badge" id="currentDate"><i class="fas fa-calendar-alt"></i> <span></span></div><i class="fas fa-bell"></i><span>Alice Martin</span><div class="avatar-mini">AM</div></div>
+        </div>
+
+        <div class="card">
+            <div class="profile-header"><div class="avatar-large">AM</div><div><h2 id="profileName">Alice Martin</h2><p id="profileEmail">alice@collabflow.com</p><span class="badge badge-admin">Administrateur</span></div></div>
+            <div class="form-grid"><div><label>Nom complet</label><input type="text" id="editName" value="Alice Martin"></div><div><label>Email</label><input type="email" id="editEmail" value="alice@collabflow.com"></div><div><label>Fonction</label><input type="text" id="editFunction" value="Product Owner"></div><div><label>Téléphone</label><input type="tel" id="editPhone" value="+212 6 12 34 56 78"></div></div>
+            <button id="saveProfileBtn"><i class="fas fa-save"></i> Enregistrer</button>
+            <button id="changePasswordBtn" style="margin-left:10px; background:#64748b"><i class="fas fa-key"></i> Changer mot de passe</button>
+        </div>
+
+        <footer class="app-footer"><!-- footer --></footer>
+    </div>
+</div>
+<script src="script.js"></script>
+<script>
+    document.querySelector('#currentDate span').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('saveProfileBtn').onclick = () => { document.getElementById('profileName').innerText = document.getElementById('editName').value; document.getElementById('profileEmail').innerText = document.getElementById('editEmail').value; window.app.showNotification("Profil mis à jour", "success"); };
+    document.getElementById('changePasswordBtn').onclick = () => alert("Fonctionnalité de changement de mot de passe (simulation)");
+</script>
+</body>
+</html>
