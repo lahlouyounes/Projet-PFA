@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Kanban | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 0 20px 30px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px; }
+        .nav-items { display: flex; flex-direction: column; gap: 5px; }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: all 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        .sidebar-footer { position: absolute; bottom: 20px; left: 20px; font-size: 0.8rem; opacity: 0.8; }
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .page-title { font-size: 1.5rem; color: #333; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .board-container { display: flex; gap: 20px; overflow-x: auto; padding: 20px 0; min-height: 500px; }
+        .kanban-list { background: #ebecf0; border-radius: 10px; min-width: 320px; width: 320px; padding: 10px; height: fit-content; }
+        .list-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
+        .list-cards { min-height: 100px; }
+        .card-item { background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .card-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .card-title { font-weight: 600; margin-bottom: 5px; }
+        .card-description { font-size: 12px; color: #666; margin-bottom: 8px; }
+        .card-priority { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 5px; }
+        .priority-high { background: #fee2e2; color: #ef4444; }
+        .priority-medium { background: #fef3c7; color: #f59e0b; }
+        .priority-low { background: #dbeafe; color: #3b82f6; }
+        .card-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .card-actions button { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 4px; transition: all 0.3s; }
+        .move-task { color: #3b82f6; }
+        .move-task:hover { background: #dbeafe; }
+        .edit-task { color: #10b981; }
+        .edit-task:hover { background: #d1fae5; }
+        .delete-task { color: #ef4444; }
+        .delete-task:hover { background: #fee2e2; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        .btn-secondary { background: #64748b; color: white; }
+        select, input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 500px; max-width: 90%; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
+        .notification-success { background: #22c55e; }
+        .notification-error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .app-footer { background: #2d3748; color: white; margin-top: 40px; border-radius: 10px; padding: 30px; }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } .board-container { flex-direction: column; } .kanban-list { width: 100%; } }
+        .project-selector { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .project-selector select { width: 300px; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link active"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+        <div class="sidebar-footer"><i class="fas fa-database"></i> MongoDB • API REST</div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-columns"></i> Tableau Kanban</h1>
+            <div class="user-badge">
+                <div class="date-badge" id="currentDate"><i class="fas fa-calendar-alt"></i> <span></span></div>
+                <i class="fas fa-bell"></i><span id="userName">Chargement...</span>
+                <div class="avatar-mini" id="userAvatar">👤</div>
+            </div>
+        </div>
+
+        <div class="project-selector">
+            <select id="projectSelect">
+                <option value="">-- Sélectionner un projet --</option>
+            </select>
+            <button class="btn btn-primary" id="openAddTaskModal" style="display:none;"><i class="fas fa-plus"></i> Ajouter une tâche</button>
+        </div>
+
+        <div class="board-container" id="kanbanBoard"></div>
+
+        <footer class="app-footer"><div class="footer-container"><div class="footer-brand"><h3><i class="fas fa-trello"></i> CollabFlow</h3><p>Gestion de projets collaboratifs</p></div></div></footer>
+    </div>
+</div>
+
+<!-- Modal Ajout Tâche -->
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-plus-circle"></i> Nouvelle tâche</h3>
+        <form id="taskForm">
+            <input type="text" id="taskTitre" placeholder="Titre *" required>
+            <textarea id="taskDescription" placeholder="Description" rows="3"></textarea>
+            <select id="taskPriorite">
+                <option value="low">🟢 Priorité Basse</option>
+                <option value="medium">🟡 Priorité Moyenne</option>
+                <option value="high">🔴 Priorité Haute</option>
+            </select>
+            <input type="date" id="taskEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeTaskModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Modification Tâche -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-edit"></i> Modifier la tâche</h3>
+        <form id="editTaskForm">
+            <input type="hidden" id="editTaskId">
+            <input type="text" id="editTaskTitre" placeholder="Titre *" required>
+            <textarea id="editTaskDescription" placeholder="Description" rows="3"></textarea>
+            <select id="editTaskPriorite">
+                <option value="low">🟢 Priorité Basse</option>
+                <option value="medium">🟡 Priorité Moyenne</option>
+                <option value="high">🔴 Priorité Haute</option>
+            </select>
+            <select id="editTaskStatut">
+                <option value="todo">📋 À faire</option>
+                <option value="progress">⚙️ En cours</option>
+                <option value="done">✅ Terminé</option>
+            </select>
+            <input type="date" id="editTaskEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeEditTaskModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    let currentProjectId = null;
+    let currentTasks = [];
+    
+    if (!token) window.location.href = 'login.html';
+    
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    async function loadProjects() {
+        try {
+            const response = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const projects = await response.json();
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">-- Sélectionner un projet --</option>';
+            projects.forEach(p => { select.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; });
+        } catch (error) { showNotification('Erreur chargement projets', 'error'); }
+    }
+    
+    async function loadTasks() {
+        if (!currentProjectId) return;
+        try {
+            const response = await fetch(`${API_URL}/taches?projetId=${currentProjectId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            currentTasks = await response.json();
+            renderKanban();
+        } catch (error) { showNotification('Erreur chargement tâches', 'error'); }
+    }
+    
+    function renderKanban() {
+        const lists = { todo: [], progress: [], done: [] };
+        currentTasks.forEach(t => { if (lists[t.statut]) lists[t.statut].push(t); });
+        
+        const board = document.getElementById('kanbanBoard');
+        board.innerHTML = '';
+        const columns = [
+            { id: 'todo', titre: '📋 À faire', color: '#f59e0b' },
+            { id: 'progress', titre: '⚙️ En cours', color: '#3b82f6' },
+            { id: 'done', titre: '✅ Terminé', color: '#22c55e' }
+        ];
+        
+        columns.forEach(col => {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'kanban-list';
+            colDiv.innerHTML = `<div class="list-header"><span>${col.titre}</span><span>${lists[col.id].length}</span></div><div class="list-cards" id="list-${col.id}"></div>`;
+            board.appendChild(colDiv);
+            
+            const container = document.getElementById(`list-${col.id}`);
+            lists[col.id].forEach(task => {
+                const priorityClass = task.priorite === 'high' ? 'priority-high' : (task.priorite === 'medium' ? 'priority-medium' : 'priority-low');
+                const priorityText = task.priorite === 'high' ? 'Haute' : (task.priorite === 'medium' ? 'Moyenne' : 'Basse');
+                container.innerHTML += `
+                    <div class="card-item">
+                        <div>
+                            <div class="card-title">${escapeHtml(task.titre)}</div>
+                            ${task.description ? `<div class="card-description">${escapeHtml(task.description.substring(0, 80))}${task.description.length > 80 ? '...' : ''}</div>` : ''}
+                            <span class="card-priority ${priorityClass}">${priorityText}</span>
+                            ${task.echeance ? `<div style="font-size:10px; color:#666; margin-top:5px;"><i class="fas fa-calendar"></i> ${new Date(task.echeance).toLocaleDateString('fr-FR')}</div>` : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="edit-task" onclick="openEditTask('${task._id}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                            ${col.id !== 'done' ? `<button class="move-task" onclick="moveTask('${task._id}', '${col.id === 'todo' ? 'progress' : 'done'}')" title="Déplacer"><i class="fas fa-arrow-right"></i></button>` : ''}
+                            <button class="delete-task" onclick="deleteTask('${task._id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    }
+    
+    async function createTask(event) {
+        event.preventDefault();
+        const data = {
+            titre: document.getElementById('taskTitre').value.trim(),
+            description: document.getElementById('taskDescription').value,
+            priorite: document.getElementById('taskPriorite').value,
+            echeance: document.getElementById('taskEcheance').value || null,
+            projet_id: currentProjectId,
+            statut: 'todo'
+        };
+        if (!data.titre) { showNotification('Titre requis', 'error'); return; }
+        
+        try {
+            const response = await fetch(`${API_URL}/taches`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                showNotification('Tâche créée !', 'success');
+                document.getElementById('taskModal').style.display = 'none';
+                document.getElementById('taskForm').reset();
+                loadTasks();
+            } else { showNotification('Erreur création', 'error'); }
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    async function openEditTask(id) {
+        const task = currentTasks.find(t => t._id === id);
+        if (task) {
+            document.getElementById('editTaskId').value = task._id;
+            document.getElementById('editTaskTitre').value = task.titre;
+            document.getElementById('editTaskDescription').value = task.description || '';
+            document.getElementById('editTaskPriorite').value = task.priorite || 'medium';
+            document.getElementById('editTaskStatut').value = task.statut || 'todo';
+            document.getElementById('editTaskEcheance').value = task.echeance ? task.echeance.split('T')[0] : '';
+            document.getElementById('editTaskModal').style.display = 'flex';
+        }
+    }
+    
+    async function updateTask(event) {
+        event.preventDefault();
+        const id = document.getElementById('editTaskId').value;
+        const data = {
+            titre: document.getElementById('editTaskTitre').value.trim(),
+            description: document.getElementById('editTaskDescription').value,
+            priorite: document.getElementById('editTaskPriorite').value,
+            statut: document.getElementById('editTaskStatut').value,
+            echeance: document.getElementById('editTaskEcheance').value || null
+        };
+        
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                showNotification('Tâche modifiée !', 'success');
+                document.getElementById('editTaskModal').style.display = 'none';
+                loadTasks();
+            } else { showNotification('Erreur modification', 'error'); }
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    async function moveTask(id, newStatus) {
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}/move`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nouvelleListe: newStatus })
+            });
+            if (response.ok) { loadTasks(); showNotification('Tâche déplacée', 'success'); }
+        } catch (error) { showNotification('Erreur déplacement', 'error'); }
+    }
+    
+    async function deleteTask(id) {
+        if (!confirm('Supprimer cette tâche ?')) return;
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) { loadTasks(); showNotification('Tâche supprimée', 'success'); }
+        } catch (error) { showNotification('Erreur suppression', 'error'); }
+    }
+    
+    async function loadUserInfo() {
+        try {
+            const response = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { const user = await response.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.avatar || user.nom.charAt(0); }
+        } catch (error) {}
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    
+    document.getElementById('projectSelect').onchange = (e) => {
+        currentProjectId = e.target.value;
+        const addBtn = document.getElementById('openAddTaskModal');
+        if (currentProjectId) { addBtn.style.display = 'inline-flex'; loadTasks(); }
+        else { addBtn.style.display = 'none'; document.getElementById('kanbanBoard').innerHTML = '<div style="text-align:center; padding:50px;">Sélectionnez un projet pour voir les tâches</div>'; }
+    };
+    
+    document.getElementById('openAddTaskModal').onclick = () => { if (currentProjectId) document.getElementById('taskModal').style.display = 'flex'; else showNotification('Sélectionnez un projet', 'error'); };
+    document.getElementById('closeTaskModal').onclick = () => document.getElementById('taskModal').style.display = 'none';
+    document.getElementById('closeEditTaskModal').onclick = () => document.getElementById('editTaskModal').style.display = 'none';
+    document.getElementById('taskForm').onsubmit = createTask;
+    document.getElementById('editTaskForm').onsubmit = updateTask;
+    window.onclick = (event) => { if (event.target.classList.contains('modal')) event.target.style.display = 'none'; };
+    window.moveTask = moveTask;
+    window.deleteTask = deleteTask;
+    window.openEditTask = openEditTask;
+    
+    document.querySelector('#currentDate span').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    loadUserInfo();
+    loadProjects();
+    console.log('✅ Page board chargée');
+</script>
+</body>
+</html>
