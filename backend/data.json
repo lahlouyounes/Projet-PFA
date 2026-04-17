@@ -1,0 +1,77 @@
+{
+  "roles": [
+    {
+      "nom": "Administrateur",
+      "permissions": {
+        "createProjects": true,
+        "manageMembers": true,
+        "assignTasks": true,
+        "deleteProjects": true,
+        "manageRoles": true
+      },
+      "description": "Accès total à toutes les fonctionnalités",
+      "membres": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "nom": "Chef de projet",
+      "permissions": {
+        "createProjects": true,
+        "manageMembers": true,
+        "assignTasks": true,
+        "deleteProjects": false,
+        "manageRoles": false
+      },
+      "description": "Gestion complète des projets et équipes",
+      "membres": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "nom": "Membre",
+      "permissions": {
+        "createProjects": false,
+        "manageMembers": false,
+        "assignTasks": true,
+        "deleteProjects": false,
+        "manageRoles": false
+      },
+      "description": "Ajout et modification de cartes",
+      "membres": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "nom": "Observateur",
+      "permissions": {
+        "createProjects": false,
+        "manageMembers": false,
+        "assignTasks": false,
+        "deleteProjects": false,
+        "manageRoles": false
+      },
+      "description": "Lecture seule",
+      "membres": 0,
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "labels": [
+    { "nom": "Urgent", "couleur": "#ef4444", "createdAt": "2024-01-01T00:00:00.000Z" },
+    { "nom": "Bug", "couleur": "#f59e0b", "createdAt": "2024-01-01T00:00:00.000Z" },
+    { "nom": "Feature", "couleur": "#22c55e", "createdAt": "2024-01-01T00:00:00.000Z" },
+    { "nom": "Documentation", "couleur": "#3b82f6", "createdAt": "2024-01-01T00:00:00.000Z" },
+    { "nom": "Design", "couleur": "#8b5cf6", "createdAt": "2024-01-01T00:00:00.000Z" },
+    { "nom": "Test", "couleur": "#14b8a6", "createdAt": "2024-01-01T00:00:00.000Z" }
+  ],
+  "users": [
+    {
+      "nom": "Administrateur",
+      "email": "admin@collabflow.com",
+      "password": "$2a$10$N9qo8uLOickgx2ZMRZoMy.MrqJqRqRqRqRqRqRqRqRqRqRqRq",
+      "fonction": "Administrateur système",
+      "telephone": "+212 6 12 34 56 78",
+      "localisation": "Casablanca, Maroc",
+      "avatar": "👑",
+      "role": "admin",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}

@@ -8,272 +8,169 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a2a3a 0%, #0f1a24 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
-        .login-box {
+        .login-container {
             background: white;
-            border-radius: 28px;
+            border-radius: 20px;
             padding: 40px;
-            width: 100%;
-            max-width: 420px;
+            width: 400px;
+            max-width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         .logo {
             text-align: center;
-            margin-bottom: 32px;
-        }
-        .logo i {
-            font-size: 2.5rem;
-            color: #3b82f6;
-        }
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 8px;
-            color: #1e293b;
-        }
-        .logo p {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-        .tabs {
-            display: flex;
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 28px;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #64748b;
-            transition: all 0.2s;
-            border: none;
-            background: none;
-        }
-        .tab.active {
-            background: white;
-            color: #3b82f6;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
         }
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
-            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #333;
             font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
         }
         .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.2s;
-            outline: none;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
         }
-        .form-group input:focus {
-            border-color: #3b82f6;
-        }
-        .btn-submit {
+        .btn-login {
             width: 100%;
-            padding: 14px;
-            background: #3b82f6;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.2s;
         }
-        .btn-submit:hover { background: #2563eb; }
-        .error-msg {
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .error-message {
             background: #fee2e2;
-            color: #b91c1c;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            margin-bottom: 16px;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             display: none;
         }
-        .success-msg {
+        .success-message {
             background: #dcfce7;
             color: #166534;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             display: none;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: #667eea;
         }
     </style>
 </head>
 <body>
-<div class="login-box">
-    <div class="logo">
-        <i class="fas fa-trello"></i>
-        <h1>CollabFlow</h1>
-        <p>Gestion de projets collaboratifs</p>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-trello"></i> CollabFlow
+        </div>
+        <h2 style="text-align:center; margin-bottom:30px;">Connexion</h2>
+        
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" required placeholder="admin@collabflow.com" value="admin@collabflow.com">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Mot de passe</label>
+                <input type="password" id="password" required placeholder="••••••••" value="admin123">
+            </div>
+            <button type="submit" class="btn-login">Se connecter</button>
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Connexion en cours...
+            </div>
+        </form>
+        
+        <div class="register-link">
+            Pas de compte ? <a href="register.html">S'inscrire</a>
+        </div>
     </div>
 
-    <div class="tabs">
-        <button class="tab active" id="tabLogin" onclick="showTab('login')">Se connecter</button>
-        <button class="tab" id="tabRegister" onclick="showTab('register')">S'inscrire</button>
-    </div>
-
-    <div id="errorMsg" class="error-msg"></div>
-    <div id="successMsg" class="success-msg"></div>
-
-    <!-- Login Form -->
-    <div id="loginForm">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="loginEmail" placeholder="votre@email.com">
-        </div>
-        <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="loginPassword" placeholder="••••••••">
-        </div>
-        <button class="btn-submit" onclick="handleLogin()">
-            <i class="fas fa-sign-in-alt"></i> Se connecter
-        </button>
-    </div>
-
-    <!-- Register Form -->
-    <div id="registerForm" style="display:none">
-        <div class="form-group">
-            <label>Nom complet</label>
-            <input type="text" id="registerNom" placeholder="Votre nom">
-        </div>
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="registerEmail" placeholder="votre@email.com">
-        </div>
-        <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="registerPassword" placeholder="••••••••">
-        </div>
-        <button class="btn-submit" onclick="handleRegister()">
-            <i class="fas fa-user-plus"></i> Créer un compte
-        </button>
-    </div>
-</div>
-
-<script>
-    const API = 'http://localhost:3000/api';
-
-    // If already logged in, redirect to dashboard
-    if (localStorage.getItem('token')) {
-        window.location.href = 'index.html';
-    }
-
-    function showTab(tab) {
-        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-        document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-        document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-        document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-        hideMessages();
-    }
-
-    function showError(msg) {
-        const el = document.getElementById('errorMsg');
-        el.innerText = msg;
-        el.style.display = 'block';
-        document.getElementById('successMsg').style.display = 'none';
-    }
-
-    function showSuccess(msg) {
-        const el = document.getElementById('successMsg');
-        el.innerText = msg;
-        el.style.display = 'block';
-        document.getElementById('errorMsg').style.display = 'none';
-    }
-
-    function hideMessages() {
-        document.getElementById('errorMsg').style.display = 'none';
-        document.getElementById('successMsg').style.display = 'none';
-    }
-
-    async function handleLogin() {
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-
-        if (!email || !password) {
-            showError('Veuillez remplir tous les champs.');
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, motDePasse: password })
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                showError(data.message);
-                return;
+    <script>
+        // ⚠️ IMPORTANT: Utilisez le port 3002 (celui du serveur)
+        const API_URL = 'http://localhost:3002/api';
+        
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data));
+                    
+                    const successDiv = document.getElementById('successMessage');
+                    successDiv.style.display = 'block';
+                    successDiv.innerHTML = '✅ Connexion réussie ! Redirection...';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    const errorDiv = document.getElementById('errorMessage');
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `❌ ${data.message || 'Email ou mot de passe incorrect'}`;
+                }
+            } catch (error) {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `❌ Erreur de connexion au serveur. Vérifiez que le backend tourne sur ${API_URL}`;
+            } finally {
+                document.getElementById('loading').style.display = 'none';
             }
-
-            // Save token and user info
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-
-            // Redirect to dashboard
-            window.location.href = 'index.html';
-
-        } catch (err) {
-            showError('Erreur de connexion au serveur.');
-        }
-    }
-
-    async function handleRegister() {
-        const nom = document.getElementById('registerNom').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-
-        if (!nom || !email || !password) {
-            showError('Veuillez remplir tous les champs.');
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom, email, motDePasse: password })
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                showError(data.message);
-                return;
-            }
-
-            showSuccess('Compte créé ! Vous pouvez maintenant vous connecter.');
-            setTimeout(() => showTab('login'), 2000);
-
-        } catch (err) {
-            showError('Erreur de connexion au serveur.');
-        }
-    }
-</script>
+        };
+    </script>
 </body>
 </html>
