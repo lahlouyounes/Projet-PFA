@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-size: 1.3rem; color: #333; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-actif { background: #dbeafe; color: #2563eb; }
+        .status-termine { background: #dcfce7; color: #16a34a; }
+        .status-archive { background: #fee2e2; color: #dc2626; }
+        .progress-bar { background: #e2e8f0; border-radius: 10px; overflow: hidden; width: 120px; height: 8px; }
+        .progress-fill { background: linear-gradient(135deg, #667eea, #764ba2); height: 100%; border-radius: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 550px; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 8px 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
+        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
+        .notification-success { background: #22c55e; }
+        .notification-error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link active"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span>Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-folder-open"></i> Gestion des projets</h1>
+            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+        </div>
+        
+        <div class="filter-bar">
+            <select id="filterStatut">
+                <option value="">Tous les statuts</option>
+                <option value="actif">Actif</option>
+                <option value="termine">Terminé</option>
+                <option value="archive">Archivé</option>
+            </select>
+            <input type="text" id="searchNom" placeholder="Rechercher un projet...">
+            <button class="btn btn-primary" onclick="applyFilters()"><i class="fas fa-search"></i> Filtrer</button>
+            <button class="btn btn-secondary" onclick="resetFilters()"><i class="fas fa-undo"></i> Réinitialiser</button>
+        </div>
+        
+        <div style="margin-bottom:20px; text-align:right;">
+            <button class="btn btn-primary" id="openAddProjectModal"><i class="fas fa-plus"></i> Nouveau projet</button>
+        </div>
+        
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Nom</th><th>Description</th><th>Avancement</th><th>Statut</th><th>Date fin</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="projectsList"><tr><td colspan="6">Chargement...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajout -->
+<div id="addProjectModal" class="modal">
+    <div class="modal-content">
+        <h3>Nouveau projet</h3>
+        <form id="addProjectForm">
+            <input type="text" id="addNom" placeholder="Nom du projet" required>
+            <textarea id="addDescription" placeholder="Description" rows="3"></textarea>
+            <select id="addStatut"><option value="actif">Actif</option><option value="termine">Terminé</option><option value="archive">Archivé</option></select>
+            <input type="number" id="addAvancement" placeholder="Avancement (0-100)" min="0" max="100" value="0">
+            <input type="date" id="addDateFin">
+            <div class="modal-buttons"><button type="button" class="btn btn-secondary" id="closeAddModal">Annuler</button><button type="submit" class="btn btn-primary">Créer</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Modification -->
+<div id="editProjectModal" class="modal">
+    <div class="modal-content">
+        <h3>Modifier le projet</h3>
+        <form id="editProjectForm">
+            <input type="hidden" id="editProjectId">
+            <input type="text" id="editNom" placeholder="Nom du projet" required>
+            <textarea id="editDescription" placeholder="Description" rows="3"></textarea>
+            <select id="editStatut"><option value="actif">Actif</option><option value="termine">Terminé</option><option value="archive">Archivé</option></select>
+            <input type="number" id="editAvancement" placeholder="Avancement (0-100)" min="0" max="100">
+            <input type="date" id="editDateFin">
+            <div class="modal-buttons"><button type="button" class="btn btn-secondary" id="closeEditModal">Annuler</button><button type="submit" class="btn btn-primary">Enregistrer</button></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    
+    let allProjects = [];
+    
+    function showNotification(msg, type = 'success') {
+        const n = document.createElement('div');
+        n.className = `notification notification-${type}`;
+        n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
+    }
+    
+    function getStatusText(s) { return { actif: 'Actif', termine: 'Terminé', archive: 'Archivé' }[s] || 'Actif'; }
+    function getStatusClass(s) { return { actif: 'status-actif', termine: 'status-termine', archive: 'status-archive' }[s] || 'status-actif'; }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '-'; }
+    
+    async function loadProjects() {
+        try {
+            const res = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+            allProjects = await res.json();
+            applyFilters();
+        } catch (error) { showNotification('Erreur de chargement', 'error'); }
+    }
+    
+    function applyFilters() {
+        const statut = document.getElementById('filterStatut').value;
+        const search = document.getElementById('searchNom').value.toLowerCase();
+        let filtered = [...allProjects];
+        if (statut) filtered = filtered.filter(p => p.statut === statut);
+        if (search) filtered = filtered.filter(p => p.nom?.toLowerCase().includes(search));
+        renderProjects(filtered);
+    }
+    
+    function resetFilters() { document.getElementById('filterStatut').value = ''; document.getElementById('searchNom').value = ''; applyFilters(); }
+    
+    function renderProjects(projects) {
+        const tbody = document.getElementById('projectsList');
+        if (!projects.length) { tbody.innerHTML = '<tr><td colspan="6">Aucun projet</td></tr>'; return; }
+        tbody.innerHTML = projects.map(p => `
+            <tr>
+                <td><strong>${escapeHtml(p.nom)}</strong></td>
+                <td>${escapeHtml(p.description) || '-'}</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:${p.avancement||0}%"></div> ${p.avancement||0}%</div></td>
+                <td><span class="badge ${getStatusClass(p.statut)}">${getStatusText(p.statut)}</span></td>
+                <td>${formatDate(p.dateFin)}</td>
+                <td><button class="btn btn-warning" onclick="editProject('${p._id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="deleteProject('${p._id}')"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    }
+    
+    async function createProject(e) {
+        e.preventDefault();
+        const data = {
+            nom: document.getElementById('addNom').value.trim(),
+            description: document.getElementById('addDescription').value,
+            statut: document.getElementById('addStatut').value,
+            avancement: parseInt(document.getElementById('addAvancement').value) || 0,
+            dateFin: document.getElementById('addDateFin').value || null
+        };
+        if (!data.nom) { showNotification('Nom requis', 'error'); return; }
+        try {
+            const res = await fetch(`${API_URL}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
+            if (res.ok) { showNotification('Projet créé'); closeAddModal(); loadProjects(); document.getElementById('addProjectForm').reset(); }
+            else showNotification('Erreur création', 'error');
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    async function updateProject(e) {
+        e.preventDefault();
+        const id = document.getElementById('editProjectId').value;
+        const data = {
+            nom: document.getElementById('editNom').value.trim(),
+            description: document.getElementById('editDescription').value,
+            statut: document.getElementById('editStatut').value,
+            avancement: parseInt(document.getElementById('editAvancement').value) || 0,
+            dateFin: document.getElementById('editDateFin').value || null
+        };
+        if (!data.nom) { showNotification('Nom requis', 'error'); return; }
+        try {
+            console.log('Envoi modification:', id, data);
+            const res = await fetch(`${API_URL}/projets/${id}`, { 
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                body: JSON.stringify(data) 
+            });
+            const result = await res.json();
+            if (res.ok) { 
+                showNotification('Projet modifié avec succès'); 
+                closeEditModal(); 
+                loadProjects(); 
+            } else { 
+                console.error('Erreur réponse:', result);
+                showNotification(result.error || 'Erreur modification', 'error'); 
+            }
+        } catch (error) { 
+            console.error('Erreur fetch:', error);
+            showNotification('Erreur de connexion au serveur', 'error'); 
+        }
+    }
+    
+    async function editProject(id) {
+        try {
+            const res = await fetch(`${API_URL}/projets/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) {
+                const p = await res.json();
+                document.getElementById('editProjectId').value = p._id;
+                document.getElementById('editNom').value = p.nom;
+                document.getElementById('editDescription').value = p.description || '';
+                document.getElementById('editStatut').value = p.statut || 'actif';
+                document.getElementById('editAvancement').value = p.avancement || 0;
+                document.getElementById('editDateFin').value = p.dateFin ? p.dateFin.split('T')[0] : '';
+                document.getElementById('editProjectModal').style.display = 'flex';
+            } else showNotification('Erreur chargement', 'error');
+        } catch (error) { showNotification('Erreur connexion', 'error'); }
+    }
+    
+    async function deleteProject(id) {
+        if (!confirm('Supprimer ce projet ?')) return;
+        try {
+            const res = await fetch(`${API_URL}/projets/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) { showNotification('Projet supprimé'); loadProjects(); }
+            else showNotification('Erreur suppression', 'error');
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    function openAddModal() { document.getElementById('addProjectModal').style.display = 'flex'; }
+    function closeAddModal() { document.getElementById('addProjectModal').style.display = 'none'; }
+    function closeEditModal() { document.getElementById('editProjectModal').style.display = 'none'; }
+    
+    async function loadUserInfo() {
+        try {
+            const res = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) { const user = await res.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.nom?.charAt(0) || '👤'; }
+        } catch (error) {}
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+    
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('openAddProjectModal').onclick = openAddModal;
+    document.getElementById('closeAddModal').onclick = closeAddModal;
+    document.getElementById('closeEditModal').onclick = closeEditModal;
+    document.getElementById('addProjectForm').onsubmit = createProject;
+    document.getElementById('editProjectForm').onsubmit = updateProject;
+    window.editProject = editProject;
+    window.deleteProject = deleteProject;
+    window.applyFilters = applyFilters;
+    window.resetFilters = resetFilters;
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    
+    loadUserInfo();
+    loadProjects();
+</script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Kanban | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-size: 1.3rem; color: #333; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        .project-selector { margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .project-selector select { padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; min-width: 250px; }
+        .kanban-board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; min-height: 500px; }
+        .kanban-col { background: #f8f9fa; border-radius: 12px; min-width: 320px; width: 320px; border: 1px solid #e2e8f0; }
+        .col-header { padding: 15px; background: white; border-radius: 12px 12px 0 0; font-weight: bold; display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; }
+        .task-list { min-height: 400px; padding: 15px; }
+        .task-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; transition: 0.2s; border-left: 3px solid #667eea; }
+        .task-card:active { cursor: grabbing; }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .task-title { font-weight: 600; margin-bottom: 5px; }
+        .task-assignee { font-size: 11px; color: #666; margin-top: 5px; }
+        .task-priority { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 5px; }
+        .priority-high { background: #fee2e2; color: #dc2626; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #d1fae5; color: #059669; }
+        .card-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .card-actions button { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 4px; transition: 0.2s; }
+        .edit-task { color: #f59e0b; }
+        .edit-task:hover { background: #fef3c7; }
+        .delete-task { color: #ef4444; }
+        .delete-task:hover { background: #fee2e2; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
+        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
+        .notification-success { background: #22c55e; }
+        .notification-error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } .kanban-board { flex-direction: column; align-items: center; } .kanban-col { width: 100%; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link active"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span>Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-columns"></i> Tableau Kanban</h1>
+            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+        </div>
+        
+        <div class="project-selector">
+            <select id="projectSelect">
+                <option value="">-- Sélectionner un projet --</option>
+            </select>
+            <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> Nouvelle tâche</button>
+        </div>
+        
+        <div class="kanban-board" id="kanbanBoard"></div>
+    </div>
+</div>
+
+<!-- Modal Ajout Tâche -->
+<div id="addTaskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-plus-circle"></i> Nouvelle tâche</h3>
+        <form id="addTaskForm">
+            <label>Titre *</label>
+            <input type="text" id="addTitre" required placeholder="Titre de la tâche">
+            <label>Description</label>
+            <textarea id="addDescription" rows="3" placeholder="Description détaillée"></textarea>
+            <label>Assigné à</label>
+            <input type="text" id="addAssignee" placeholder="Nom de la personne">
+            <label>Priorité</label>
+            <select id="addPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium" selected>🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Date d'échéance</label>
+            <input type="date" id="addEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeAddModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Modification Tâche -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-edit"></i> Modifier la tâche</h3>
+        <form id="editTaskForm">
+            <input type="hidden" id="editTaskId">
+            <label>Titre *</label>
+            <input type="text" id="editTitre" required placeholder="Titre de la tâche">
+            <label>Description</label>
+            <textarea id="editDescription" rows="3" placeholder="Description détaillée"></textarea>
+            <label>Assigné à</label>
+            <input type="text" id="editAssignee" placeholder="Nom de la personne">
+            <label>Priorité</label>
+            <select id="editPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium">🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Statut</label>
+            <select id="editStatus">
+                <option value="todo">📋 À faire</option>
+                <option value="in-progress">⚙️ En cours</option>
+                <option value="done">✅ Terminé</option>
+            </select>
+            <label>Date d'échéance</label>
+            <input type="date" id="editEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeEditModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    
+    let projects = [];
+    let tasks = [];
+    let currentProjectId = null;
+    
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    function getPriorityText(p) { return { high: 'Haute', medium: 'Moyenne', low: 'Basse' }[p] || 'Moyenne'; }
+    function getPriorityClass(p) { return { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' }[p] || 'priority-medium'; }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : ''; }
+    
+    async function loadProjects() {
+        try {
+            const res = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+            projects = await res.json();
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">-- Sélectionner un projet --</option>';
+            projects.forEach(p => { select.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; });
+        } catch (error) { showNotification('Erreur chargement projets', 'error'); }
+    }
+    
+    async function loadTasks() {
+        if (!currentProjectId) return;
+        try {
+            const res = await fetch(`${API_URL}/taches?projetId=${currentProjectId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            tasks = await res.json();
+            renderKanban();
+        } catch (error) { showNotification('Erreur chargement tâches', 'error'); }
+    }
+    
+    function renderKanban() {
+        const columns = {
+            todo: { title: '📋 À faire', tasks: tasks.filter(t => t.status === 'todo') },
+            'in-progress': { title: '⚙️ En cours', tasks: tasks.filter(t => t.status === 'in-progress') },
+            done: { title: '✅ Terminé', tasks: tasks.filter(t => t.status === 'done') }
+        };
+        
+        let html = '';
+        for (const [status, col] of Object.entries(columns)) {
+            html += `
+                <div class="kanban-col" data-status="${status}">
+                    <div class="col-header">
+                        <span>${col.title}</span>
+                        <span style="background:#e2e8f0; padding:4px 12px; border-radius:20px;">${col.tasks.length}</span>
+                    </div>
+                    <div class="task-list" id="col-${status}">
+                        ${col.tasks.map(t => `
+                            <div class="task-card" data-id="${t._id}">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <div>
+                                        <div class="task-title">${escapeHtml(t.titre)}</div>
+                                        ${t.description ? `<div style="font-size:11px; color:#666; margin-top:4px;">${escapeHtml(t.description.substring(0, 60))}${t.description.length > 60 ? '...' : ''}</div>` : ''}
+                                        <div class="task-assignee"><i class="fas fa-user"></i> ${escapeHtml(t.assigne) || 'Non assigné'}</div>
+                                        <span class="task-priority ${getPriorityClass(t.priorite)}">${getPriorityText(t.priorite)}</span>
+                                        ${t.echeance ? `<div style="font-size:10px; color:#666; margin-top:5px;"><i class="fas fa-calendar"></i> ${formatDate(t.echeance)}</div>` : ''}
+                                    </div>
+                                    <div class="card-actions">
+                                        <button class="edit-task" onclick="editTask('${t._id}')" title="Modifier"><i class="fas fa-edit"></i></button>
+                                        <button class="delete-task" onclick="deleteTask('${t._id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        document.getElementById('kanbanBoard').innerHTML = html;
+        
+        // Initialiser Sortable pour chaque colonne
+        ['todo', 'in-progress', 'done'].forEach(status => {
+            const el = document.getElementById(`col-${status}`);
+            if (el && tasks.length > 0) {
+                new Sortable(el, {
+                    group: 'kanban',
+                    animation: 200,
+                    onEnd: async (evt) => {
+                        const taskId = evt.item.getAttribute('data-id');
+                        const newStatus = evt.to.closest('.kanban-col').getAttribute('data-status');
+                        if (taskId && newStatus) {
+                            await updateTaskStatus(taskId, newStatus);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    async function updateTaskStatus(taskId, newStatus) {
+        try {
+            const response = await fetch(`${API_URL}/taches/${taskId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (response.ok) {
+                showNotification('Tâche déplacée', 'success');
+                loadTasks();
+            }
+        } catch (error) { showNotification('Erreur déplacement', 'error'); }
+    }
+    
+    async function createTask(event) {
+        event.preventDefault();
+        const data = {
+            titre: document.getElementById('addTitre').value.trim(),
+            description: document.getElementById('addDescription').value,
+            assigne: document.getElementById('addAssignee').value,
+            priorite: document.getElementById('addPriorite').value,
+            status: 'todo',
+            echeance: document.getElementById('addEcheance').value || null,
+            projetId: currentProjectId
+        };
+        if (!data.titre) { showNotification('Titre requis', 'error'); return; }
+        if (!data.projetId) { showNotification('Sélectionnez un projet', 'error'); return; }
+        
+        try {
+            const response = await fetch(`${API_URL}/taches`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                showNotification('Tâche créée', 'success');
+                closeAddModal();
+                document.getElementById('addTaskForm').reset();
+                loadTasks();
+            } else { showNotification('Erreur création', 'error'); }
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    async function editTask(id) {
+        const task = tasks.find(t => t._id === id);
+        if (!task) return;
+        document.getElementById('editTaskId').value = task._id;
+        document.getElementById('editTitre').value = task.titre;
+        document.getElementById('editDescription').value = task.description || '';
+        document.getElementById('editAssignee').value = task.assigne || '';
+        document.getElementById('editPriorite').value = task.priorite || 'medium';
+        document.getElementById('editStatus').value = task.status || 'todo';
+        document.getElementById('editEcheance').value = task.echeance ? task.echeance.split('T')[0] : '';
+        document.getElementById('editTaskModal').style.display = 'flex';
+    }
+    
+    async function updateTask(event) {
+        event.preventDefault();
+        const id = document.getElementById('editTaskId').value;
+        const data = {
+            titre: document.getElementById('editTitre').value.trim(),
+            description: document.getElementById('editDescription').value,
+            assigne: document.getElementById('editAssignee').value,
+            priorite: document.getElementById('editPriorite').value,
+            status: document.getElementById('editStatus').value,
+            echeance: document.getElementById('editEcheance').value || null
+        };
+        if (!data.titre) { showNotification('Titre requis', 'error'); return; }
+        
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                showNotification('Tâche modifiée', 'success');
+                closeEditModal();
+                loadTasks();
+            } else { showNotification('Erreur modification', 'error'); }
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    async function deleteTask(id) {
+        if (!confirm('Supprimer cette tâche ?')) return;
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                showNotification('Tâche supprimée', 'success');
+                loadTasks();
+            } else { showNotification('Erreur suppression', 'error'); }
+        } catch (error) { showNotification('Erreur serveur', 'error'); }
+    }
+    
+    function openAddModal() {
+        if (!currentProjectId) {
+            showNotification('Sélectionnez d\'abord un projet', 'error');
+            return;
+        }
+        document.getElementById('addTaskModal').style.display = 'flex';
+    }
+    function closeAddModal() { document.getElementById('addTaskModal').style.display = 'none'; }
+    function closeEditModal() { document.getElementById('editTaskModal').style.display = 'none'; }
+    
+    async function loadUserInfo() {
+        try {
+            const res = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) { const user = await res.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.nom?.charAt(0) || '👤'; }
+        } catch (error) {}
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+    
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('projectSelect').onchange = (e) => {
+        currentProjectId = e.target.value;
+        if (currentProjectId) loadTasks();
+        else document.getElementById('kanbanBoard').innerHTML = '<div style="text-align:center; padding:50px;">Sélectionnez un projet pour voir les tâches</div>';
+    };
+    document.getElementById('openAddTaskModal').onclick = openAddModal;
+    document.getElementById('closeAddModal').onclick = closeAddModal;
+    document.getElementById('closeEditModal').onclick = closeEditModal;
+    document.getElementById('addTaskForm').onsubmit = createTask;
+    document.getElementById('editTaskForm').onsubmit = updateTask;
+    window.editTask = editTask;
+    window.deleteTask = deleteTask;
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+    
+    loadUserInfo();
+    loadProjects();
+</script>
+</body>
+</html>

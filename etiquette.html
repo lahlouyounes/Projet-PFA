@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Étiquettes | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-size: 1.3rem; color: #333; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .color-preview { width: 40px; height: 40px; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal-content input[type="color"] { width: 60px; height: 40px; padding: 4px; cursor: pointer; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
+        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
+        .color-row { display: flex; align-items: center; gap: 15px; margin: 10px 0 20px; }
+        .color-row span { font-size: 0.9rem; color: #666; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
+        .notification-success { background: #22c55e; }
+        .notification-error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span>Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="etiquette.html" class="nav-link active"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-tags"></i> Gestion des étiquettes</h1>
+            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+        </div>
+        <div style="margin-bottom:20px; text-align:right;"><button class="btn btn-primary" id="openAddLabelModal"><i class="fas fa-plus"></i> Nouvelle étiquette</button></div>
+        <div class="card"><table class="data-table"><thead><tr><th>Nom</th><th>Couleur</th><th>Description</th><th>Actions</th></tr></thead><tbody id="labelsList"><tr><td colspan="4" style="text-align:center;">Chargement...</td></tr></tbody></table></div>
+    </div>
+</div>
+
+<!-- Modal Ajout/Modification Étiquette -->
+<div id="labelModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Ajouter une étiquette</h3>
+        <input type="hidden" id="labelId">
+        <label>Nom de l'étiquette</label>
+        <input type="text" id="labelNom" placeholder="Ex: Urgent, Bug, Feature..." required>
+        <label>Couleur</label>
+        <div class="color-row">
+            <input type="color" id="labelCouleur" value="#667eea">
+            <span id="colorPreviewText">#667eea</span>
+        </div>
+        <label>Description (optionnelle)</label>
+        <input type="text" id="labelDescription" placeholder="Description de l'étiquette">
+        <div class="modal-buttons">
+            <button class="btn btn-secondary" id="closeLabelModal">Annuler</button>
+            <button class="btn btn-primary" id="saveLabelBtn">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    
+    let labels = [];
+    
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    async function loadLabels() {
+        try {
+            const res = await fetch(`${API_URL}/etiquettes`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+            labels = await res.json();
+            const tbody = document.getElementById('labelsList');
+            if (labels.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Aucune étiquette. Cliquez sur "Nouvelle étiquette" pour commencer.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = labels.map(l => `
+                <tr>
+                    <td><strong>${escapeHtml(l.nom)}</strong></td>
+                    <td><div class="color-preview" style="background: ${l.couleur};"></div></td>
+                    <td>${escapeHtml(l.description) || '-'}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editLabel('${l._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteLabel('${l._id}')" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Erreur:', error);
+            showNotification('Erreur de chargement des étiquettes', 'error');
+        }
+    }
+    
+    async function saveLabel() {
+        const id = document.getElementById('labelId').value;
+        const nom = document.getElementById('labelNom').value.trim();
+        const couleur = document.getElementById('labelCouleur').value;
+        const description = document.getElementById('labelDescription').value.trim();
+        
+        if (!nom) {
+            showNotification('Le nom de l\'étiquette est requis', 'error');
+            return;
+        }
+        
+        const data = { nom, couleur, description };
+        
+        try {
+            let response;
+            if (id) {
+                response = await fetch(`${API_URL}/etiquettes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+            } else {
+                response = await fetch(`${API_URL}/etiquettes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+            }
+            
+            if (response.ok) {
+                showNotification(id ? 'Étiquette modifiée avec succès' : 'Étiquette créée avec succès', 'success');
+                closeModal();
+                loadLabels();
+            } else {
+                const error = await response.json();
+                showNotification(error.message || 'Erreur lors de la sauvegarde', 'error');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            showNotification('Erreur de connexion au serveur', 'error');
+        }
+    }
+    
+    async function editLabel(id) {
+        try {
+            const res = await fetch(`${API_URL}/etiquettes/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) {
+                const label = await res.json();
+                document.getElementById('modalTitle').innerText = 'Modifier l\'étiquette';
+                document.getElementById('labelId').value = label._id;
+                document.getElementById('labelNom').value = label.nom;
+                document.getElementById('labelCouleur').value = label.couleur || '#667eea';
+                document.getElementById('colorPreviewText').innerText = label.couleur || '#667eea';
+                document.getElementById('labelDescription').value = label.description || '';
+                document.getElementById('labelModal').style.display = 'flex';
+            } else {
+                showNotification('Erreur lors du chargement de l\'étiquette', 'error');
+            }
+        } catch (error) {
+            showNotification('Erreur de connexion', 'error');
+        }
+    }
+    
+    async function deleteLabel(id) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette étiquette ?')) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/etiquettes/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                showNotification('Étiquette supprimée avec succès', 'success');
+                loadLabels();
+            } else {
+                showNotification('Erreur lors de la suppression', 'error');
+            }
+        } catch (error) {
+            showNotification('Erreur de connexion', 'error');
+        }
+    }
+    
+    function openAddModal() {
+        document.getElementById('modalTitle').innerText = 'Ajouter une étiquette';
+        document.getElementById('labelId').value = '';
+        document.getElementById('labelNom').value = '';
+        document.getElementById('labelCouleur').value = '#667eea';
+        document.getElementById('colorPreviewText').innerText = '#667eea';
+        document.getElementById('labelDescription').value = '';
+        document.getElementById('labelModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+        document.getElementById('labelModal').style.display = 'none';
+    }
+    
+    async function loadUserInfo() {
+        try {
+            const response = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('userName').innerText = user.nom;
+                document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤';
+            }
+        } catch (error) {}
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+    
+    // Mise à jour de l'aperçu de la couleur
+    document.getElementById('labelCouleur').addEventListener('input', (e) => {
+        document.getElementById('colorPreviewText').innerText = e.target.value;
+    });
+    
+    // Événements
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('openAddLabelModal').onclick = openAddModal;
+    document.getElementById('closeLabelModal').onclick = closeModal;
+    document.getElementById('saveLabelBtn').onclick = saveLabel;
+    window.editLabel = editLabel;
+    window.deleteLabel = deleteLabel;
+    window.logout = logout;
+    
+    // Fermer la modale en cliquant à l'extérieur
+    window.onclick = (event) => {
+        if (event.target.classList.contains('modal')) {
+            closeModal();
+        }
+    };
+    
+    loadUserInfo();
+    loadLabels();
+</script>
+</body>
+</html>
