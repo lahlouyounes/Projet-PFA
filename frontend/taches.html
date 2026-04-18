@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tâches | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .page-title { font-size: 1.3rem; color: #333; }
+        .user-badge { display: flex; align-items: center; gap: 15px; }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-todo { background: #fef3c7; color: #d97706; }
+        .status-progress { background: #dbeafe; color: #2563eb; }
+        .status-done { background: #dcfce7; color: #16a34a; }
+        .priority-high { background: #fee2e2; color: #dc2626; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #d1fae5; color: #059669; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 550px; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal-content textarea { resize: vertical; min-height: 80px; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 8px 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
+        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
+        .notification-success { background: #22c55e; }
+        .notification-error { background: #ef4444; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
+            <a href="taches.html" class="nav-link active"><i class="fas fa-tasks"></i><span>Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title"><i class="fas fa-tasks"></i> Gestion des tâches</h1>
+            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+        </div>
+        
+        <div class="filter-bar">
+            <select id="filterProjet">
+                <option value="">Tous les projets</option>
+            </select>
+            <select id="filterStatut">
+                <option value="">Tous les statuts</option>
+                <option value="todo">À faire</option>
+                <option value="in-progress">En cours</option>
+                <option value="done">Terminé</option>
+            </select>
+            <select id="filterPriorite">
+                <option value="">Toutes les priorités</option>
+                <option value="high">Haute</option>
+                <option value="medium">Moyenne</option>
+                <option value="low">Basse</option>
+            </select>
+            <input type="text" id="searchTitre" placeholder="Rechercher une tâche...">
+            <button class="btn btn-primary" onclick="applyFilters()"><i class="fas fa-search"></i> Filtrer</button>
+            <button class="btn btn-secondary" onclick="resetFilters()"><i class="fas fa-undo"></i> Réinitialiser</button>
+        </div>
+        
+        <div style="margin-bottom:20px; text-align:right;">
+            <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> Nouvelle tâche</button>
+        </div>
+        
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Projet</th>
+                        <th>Assigné à</th>
+                        <th>Priorité</th>
+                        <th>Statut</th>
+                        <th>Échéance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksList">
+                    <tr><td colspan="7" style="text-align:center;">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajout Tâche -->
+<div id="addTaskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-plus-circle"></i> Nouvelle tâche</h3>
+        <form id="addTaskForm">
+            <label>Titre *</label>
+            <input type="text" id="addTitre" required placeholder="Titre de la tâche">
+            <label>Description</label>
+            <textarea id="addDescription" placeholder="Description détaillée"></textarea>
+            <label>Projet</label>
+            <select id="addProjetId" required></select>
+            <label>Assigné à</label>
+            <input type="text" id="AddAssignee" placeholder="Nom de la personne assignée">
+            <label>Priorité</label>
+            <select id="addPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium" selected>🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Date d'échéance</label>
+            <input type="date" id="addEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeAddModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Créer la tâche</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Modification Tâche -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-edit"></i> Modifier la tâche</h3>
+        <form id="editTaskForm">
+            <input type="hidden" id="editTaskId">
+            <label>Titre *</label>
+            <input type="text" id="editTitre" required placeholder="Titre de la tâche">
+            <label>Description</label>
+            <textarea id="editDescription" placeholder="Description détaillée"></textarea>
+            <label>Projet</label>
+            <select id="editProjetId" required></select>
+            <label>Assigné à</label>
+            <input type="text" id="editAssignee" placeholder="Nom de la personne assignée">
+            <label>Priorité</label>
+            <select id="editPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium">🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Statut</label>
+            <select id="editStatut">
+                <option value="todo">📋 À faire</option>
+                <option value="in-progress">⚙️ En cours</option>
+                <option value="done">✅ Terminé</option>
+            </select>
+            <label>Date d'échéance</label>
+            <input type="date" id="editEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeEditModal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+    
+    let allTasks = [];
+    let projects = [];
+    
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    function getPriorityText(priority) {
+        const priorities = { 'high': '🔴 Haute', 'medium': '🟡 Moyenne', 'low': '🟢 Basse' };
+        return priorities[priority] || '🟡 Moyenne';
+    }
+    
+    function getPriorityClass(priority) {
+        const classes = { 'high': 'priority-high', 'medium': 'priority-medium', 'low': 'priority-low' };
+        return classes[priority] || 'priority-medium';
+    }
+    
+    function getStatusText(status) {
+        const statuses = { 'todo': 'À faire', 'in-progress': 'En cours', 'done': 'Terminé' };
+        return statuses[status] || 'À faire';
+    }
+    
+    function getStatusClass(status) {
+        const classes = { 'todo': 'status-todo', 'in-progress': 'status-progress', 'done': 'status-done' };
+        return classes[status] || 'status-todo';
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR');
+    }
+    
+    async function loadProjects() {
+        try {
+            const res = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
+            projects = await res.json();
+            
+            const filterSelect = document.getElementById('filterProjet');
+            const addSelect = document.getElementById('addProjetId');
+            const editSelect = document.getElementById('editProjetId');
+            
+            filterSelect.innerHTML = '<option value="">Tous les projets</option>';
+            addSelect.innerHTML = '';
+            editSelect.innerHTML = '';
+            
+            projects.forEach(p => {
+                filterSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`;
+                addSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`;
+                editSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`;
+            });
+        } catch (error) {
+            console.error('Erreur chargement projets:', error);
+        }
+    }
+    
+    async function loadTasks() {
+        try {
+            const res = await fetch(`${API_URL}/taches`, { headers: { 'Authorization': `Bearer ${token}` } });
+            allTasks = await res.json();
+            applyFilters();
+        } catch (error) {
+            console.error('Erreur:', error);
+            showNotification('Erreur de chargement des tâches', 'error');
+        }
+    }
+    
+    function applyFilters() {
+        const projetId = document.getElementById('filterProjet').value;
+        const statut = document.getElementById('filterStatut').value;
+        const priorite = document.getElementById('filterPriorite').value;
+        const searchTerm = document.getElementById('searchTitre').value.toLowerCase();
+        
+        let filtered = [...allTasks];
+        
+        if (projetId) filtered = filtered.filter(t => t.projetId === projetId);
+        if (statut) filtered = filtered.filter(t => t.status === statut);
+        if (priorite) filtered = filtered.filter(t => t.priorite === priorite);
+        if (searchTerm) filtered = filtered.filter(t => t.titre?.toLowerCase().includes(searchTerm));
+        
+        renderTasks(filtered);
+    }
+    
+    function resetFilters() {
+        document.getElementById('filterProjet').value = '';
+        document.getElementById('filterStatut').value = '';
+        document.getElementById('filterPriorite').value = '';
+        document.getElementById('searchTitre').value = '';
+        applyFilters();
+    }
+    
+    function renderTasks(tasks) {
+        const tbody = document.getElementById('tasksList');
+        if (tasks.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Aucune tâche trouvée</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = tasks.map(t => {
+            const project = projects.find(p => p._id === t.projetId);
+            return `
+                <tr>
+                    <td><strong>${escapeHtml(t.titre)}</strong><br><small style="color:#666;">${escapeHtml(t.description?.substring(0, 50)) || ''}</small></td>
+                    <td>${project ? escapeHtml(project.nom) : '-'}</td>
+                    <td><i class="fas fa-user"></i> ${escapeHtml(t.assigne) || 'Non assigné'}</td>
+                    <td><span class="badge ${getPriorityClass(t.priorite)}">${getPriorityText(t.priorite)}</span></td>
+                    <td><span class="badge ${getStatusClass(t.status)}">${getStatusText(t.status)}</span></td>
+                    <td>${formatDate(t.echeance)}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editTask('${t._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteTask('${t._id}')" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
+                        ${t.status !== 'done' ? `<button class="btn btn-success" onclick="changeStatus('${t._id}', 'done')" style="padding:5px 10px;" title="Marquer terminé"><i class="fas fa-check"></i></button>` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    async function createTask(event) {
+        event.preventDefault();
+        const data = {
+            titre: document.getElementById('addTitre').value.trim(),
+            description: document.getElementById('addDescription').value,
+            projetId: document.getElementById('addProjetId').value,
+            assigne: document.getElementById('AddAssignee').value,
+            priorite: document.getElementById('addPriorite').value,
+            status: 'todo',
+            echeance: document.getElementById('addEcheance').value || null
+        };
+        
+        if (!data.titre) {
+            showNotification('Le titre est requis', 'error');
+            return;
+        }
+        if (!data.projetId) {
+            showNotification('Veuillez sélectionner un projet', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/taches`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                showNotification('Tâche créée avec succès', 'success');
+                closeAddModal();
+                loadTasks();
+                document.getElementById('addTaskForm').reset();
+            } else {
+                const error = await response.json();
+                showNotification(error.message || 'Erreur lors de la création', 'error');
+            }
+        } catch (error) {
+            showNotification('Erreur de connexion', 'error');
+        }
+    }
+    
+    async function updateTask(event) {
+        event.preventDefault();
+        const id = document.getElementById('editTaskId').value;
+        const data = {
+            titre: document.getElementById('editTitre').value.trim(),
+            description: document.getElementById('editDescription').value,
+            projetId: document.getElementById('editProjetId').value,
+            assigne: document.getElementById('editAssignee').value,
+            priorite: document.getElementById('editPriorite').value,
+            status: document.getElementById('editStatut').value,
+            echeance: document.getElementById('editEcheance').value || null
+        };
+        
+        if (!data.titre) {
+            showNotification('Le titre est requis', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                showNotification('Tâche modifiée avec succès', 'success');
+                closeEditModal();
+                loadTasks();
+            } else {
+                showNotification('Erreur lors de la modification', 'error');
+            }
+        } catch (error) {
+            showNotification('Erreur de connexion', 'error');
+        }
+    }
+    
+    async function editTask(id) {
+        try {
+            const res = await fetch(`${API_URL}/taches/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) {
+                const task = await res.json();
+                document.getElementById('editTaskId').value = task._id;
+                document.getElementById('editTitre').value = task.titre;
+                document.getElementById('editDescription').value = task.description || '';
+                document.getElementById('editProjetId').value = task.projetId;
+                document.getElementById('editAssignee').value = task.assigne || '';
+                document.getElementById('editPriorite').value = task.priorite || 'medium';
+                document.getElementById('editStatut').value = task.status || 'todo';
+                document.getElementById('editEcheance').value = task.echeance ? task.echeance.split('T')[0] : '';
+                document.getElementById('editTaskModal').style.display = 'flex';
+            }
+        } catch (error) {
+            showNotification('Erreur de chargement', 'error');
+        }
+    }
+    
+    async function deleteTask(id) {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                showNotification('Tâche supprimée avec succès', 'success');
+                loadTasks();
+            } else {
+                showNotification('Erreur lors de la suppression', 'error');
+            }
+        } catch (error) {
+            showNotification('Erreur de connexion', 'error');
+        }
+    }
+    
+    async function changeStatus(id, newStatus) {
+        try {
+            const response = await fetch(`${API_URL}/taches/${id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (response.ok) {
+                showNotification('Statut mis à jour', 'success');
+                loadTasks();
+            }
+        } catch (error) {
+            showNotification('Erreur lors du changement de statut', 'error');
+        }
+    }
+    
+    function openAddModal() {
+        document.getElementById('addTaskModal').style.display = 'flex';
+    }
+    
+    function closeAddModal() {
+        document.getElementById('addTaskModal').style.display = 'none';
+    }
+    
+    function closeEditModal() {
+        document.getElementById('editTaskModal').style.display = 'none';
+    }
+    
+    async function loadUserInfo() {
+        try {
+            const response = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('userName').innerText = user.nom;
+                document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤';
+            }
+        } catch (error) {}
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+    
+    // Événements
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('openAddTaskModal').onclick = openAddModal;
+    document.getElementById('closeAddModal').onclick = closeAddModal;
+    document.getElementById('closeEditModal').onclick = closeEditModal;
+    document.getElementById('addTaskForm').onsubmit = createTask;
+    document.getElementById('editTaskForm').onsubmit = updateTask;
+    
+    window.editTask = editTask;
+    window.deleteTask = deleteTask;
+    window.changeStatus = changeStatus;
+    window.applyFilters = applyFilters;
+    window.resetFilters = resetFilters;
+    window.logout = logout;
+    
+    // Fermer les modales en cliquant à l'extérieur
+    window.onclick = (event) => {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+    
+    loadUserInfo();
+    loadProjects();
+    loadTasks();
+</script>
+</body>
+</html>

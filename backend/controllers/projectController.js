@@ -1,80 +1,68 @@
 const Project = require('../models/Project');
-const Task = require('../models/Task');
 
-// READ - Récupérer tous les projets d'un utilisateur
-const getProjects = async (req, res) => {
+exports.getProjects = async (req, res) => {
     try {
-        const projects = await Project.find({
-            $or: [
-                { proprietaire_id: req.user._id },
-                { membres: req.user._id }
-            ]
-        }).populate('proprietaire_id', 'nom email');
+        const projects = await Project.find().sort('-createdAt');
         res.json(projects);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
-// CREATE - Créer un projet
-const createProject = async (req, res) => {
+exports.getProjectById = async (req, res) => {
     try {
-        const project = await Project.create({
-            ...req.body,
-            proprietaire_id: req.user._id,
-            membres: [req.user._id]
-        });
+        const project = await Project.findById(req.params.id);
+        if (!project) return res.status(404).json({ error: 'Projet non trouvé' });
+        res.json(project);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.createProject = async (req, res) => {
+    try {
+        const project = await Project.create({ ...req.body, createdBy: req.user._id });
         res.status(201).json(project);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Erreur création:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 
-// READ - Récupérer un projet par ID
-const getProjectById = async (req, res) => {
+exports.updateProject = async (req, res) => {
     try {
-        const project = await Project.findById(req.params.id)
-            .populate('proprietaire_id', 'nom email')
-            .populate('membres', 'nom email');
+        const { id } = req.params;
+        const updateData = {
+            nom: req.body.nom,
+            description: req.body.description,
+            statut: req.body.statut,
+            avancement: req.body.avancement,
+            dateFin: req.body.dateFin,
+            updatedAt: Date.now()
+        };
+        
+        const project = await Project.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+        
         if (!project) {
-            return res.status(404).json({ message: 'Projet non trouvé' });
+            return res.status(404).json({ error: 'Projet non trouvé' });
         }
+        
+        console.log('✅ Projet modifié:', project.nom);
         res.json(project);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Erreur modification:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 
-// UPDATE - Modifier un projet
-const updateProject = async (req, res) => {
-    try {
-        const project = await Project.findByIdAndUpdate(
-            req.params.id,
-            { ...req.body },
-            { new: true, runValidators: true }
-        );
-        if (!project) {
-            return res.status(404).json({ message: 'Projet non trouvé' });
-        }
-        res.json(project);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// DELETE - Supprimer un projet
-const deleteProject = async (req, res) => {
+exports.deleteProject = async (req, res) => {
     try {
         const project = await Project.findByIdAndDelete(req.params.id);
-        if (!project) {
-            return res.status(404).json({ message: 'Projet non trouvé' });
-        }
-        // Supprimer toutes les tâches du projet
-        await Task.deleteMany({ projet_id: req.params.id });
-        res.json({ message: 'Projet supprimé avec succès' });
+        if (!project) return res.status(404).json({ error: 'Projet non trouvé' });
+        // Supprimer les tâches associées
+        await Task.deleteMany({ projetId: req.params.id });
+        res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
-
-module.exports = { getProjects, createProject, getProjectById, updateProject, deleteProject };
