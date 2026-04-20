@@ -6,97 +6,428 @@
     <title>Rôles | CollabFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ============================================
+           VARIABLES LIGHT MODE (DÉFAUT)
+        ============================================ */
+        :root {
+            --bg-primary: #f4f5f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f8f9fa;
+            --text-primary: #1a1a2e;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
+            --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-text: #ffffff;
+            --input-bg: #ffffff;
+            --table-header-bg: #f8f9fa;
+            --permission-group-bg: #f8fafc;
+            --topbar-bg: #ffffff;
+        }
+
+        /* ============================================
+           DARK MODE VARIABLES
+        ============================================ */
+        [data-theme="dark"] {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #11151c;
+            --bg-card: #14181f;
+            --bg-hover: #1e2430;
+            --text-primary: #f0f3f8;
+            --text-secondary: #8e9aaf;
+            --text-muted: #5b677b;
+            --border-color: #232832;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --sidebar-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --sidebar-text: #ffffff;
+            --input-bg: #1a1f2a;
+            --table-header-bg: #1a1f2a;
+            --permission-group-bg: #1a1f2a;
+            --topbar-bg: #11151c;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
         .app { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-bg); 
+            color: var(--sidebar-text); 
+            position: fixed; 
+            height: 100vh; 
+            overflow-y: auto;
+            transition: background 0.3s ease;
+        }
+        
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            padding: 25px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .nav-link { 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--sidebar-text); 
+            text-decoration: none; 
+            transition: 0.3s; 
+        }
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        
         .main-content { flex: 1; margin-left: 260px; padding: 20px; }
-        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .page-title { font-size: 1.3rem; color: #333; }
-        .user-badge { display: flex; align-items: center; gap: 15px; }
-        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        
+        .top-bar { 
+            background: var(--topbar-bg); 
+            border-radius: 12px; 
+            padding: 15px 25px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .page-title { font-size: 1.3rem; color: var(--text-primary); }
+        
+        .user-badge { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .avatar-mini { 
+            width: 35px; 
+            height: 35px; 
+            background: #667eea; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+        }
+        
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 14px; 
+        }
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-danger { background: #ef4444; color: white; }
         .btn-secondary { background: #64748b; color: white; }
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        .card { 
+            background: var(--bg-card); 
+            border-radius: 12px; 
+            padding: 20px; 
+            border: 1px solid var(--border-color);
+        }
+        
         .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        .data-table th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .data-table th, .data-table td { 
+            padding: 15px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-secondary);
+        }
+        .data-table th { 
+            background: var(--table-header-bg); 
+            color: var(--text-primary); 
+            font-weight: 600; 
+        }
+        .data-table tr:hover td { background: var(--bg-hover); }
+        
         .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
         .badge-admin { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .badge-user { background: #22c55e; color: white; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; }
-        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal-content { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 30px; 
+            width: 90%; 
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+        }
+        .modal-content h3, .modal-content h4 { color: var(--text-primary); margin-bottom: 15px; }
+        .modal-content input, .modal-content select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0 20px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
         .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
-        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
-        .permission-group { margin: 15px 0; padding: 15px; background: #f8fafc; border-radius: 10px; }
+        
+        .permission-group { 
+            margin: 15px 0; 
+            padding: 15px; 
+            background: var(--permission-group-bg); 
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
         .permission-checkbox { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .permission-checkbox input { width: auto; margin: 0; }
+        .permission-checkbox label { color: var(--text-secondary); cursor: pointer; }
+        
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 30px; position: relative; width: 54px; }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            background-color: white;
+            bottom: 3px;
+            content: "";
+            height: 24px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 24px;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #667eea; }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .slider .fa-sun, .slider .fa-moon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: white;
+        }
+        .slider .fa-sun { left: 8px; }
+        .slider .fa-moon { right: 8px; }
+        
+        .lang-selector {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .lang-selector:hover { border-color: #667eea; }
+        .lang-selector option { background: var(--bg-secondary); color: var(--text-primary); }
+        
+        body.rtl { direction: rtl; }
+        body.rtl .sidebar { right: 0; left: auto; }
+        body.rtl .main-content { margin-right: 260px; margin-left: 0; }
+        body.rtl .nav-link.active { border-left: none; border-right: 3px solid white; }
+        body.rtl .data-table th, body.rtl .data-table td { text-align: right; }
+        body.rtl .permission-checkbox { flex-direction: row-reverse; justify-content: flex-end; }
+        
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1rem; padding: 8px 12px; border-radius: 8px; }
+        .logout-btn:hover { background: rgba(231, 76, 60, 0.1); }
+        
+        .date-badge { background: var(--bg-secondary); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--border-color); }
+        
         .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
         .notification-success { background: #22c55e; }
         .notification-error { background: #ef4444; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+        
+        .theme-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            animation: fadeInOut 2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        
+        @media (max-width: 768px) { 
+            .sidebar { width: 70px; } 
+            .sidebar span { display: none; } 
+            .main-content { margin-left: 70px; } 
+            body.rtl .main-content { margin-right: 70px; margin-left: 0; }
+        }
+        
+        [data-theme="dark"] ::-webkit-scrollbar { width: 8px; height: 8px; }
+        [data-theme="dark"] ::-webkit-scrollbar-track { background: #1a1f2a; border-radius: 10px; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2a313c; border-radius: 10px; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="sidebar">
-        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="logo"><i class="fas fa-trello"></i><span id="sidebarTitle">CollabFlow</span></div>
         <div class="nav-items">
-            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
-            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
-            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
-            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span>Tâches</span></a>
-            <a href="roles.html" class="nav-link active"><i class="fas fa-tag"></i><span>Rôles</span></a>
-            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
-            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span id="navDashboard">Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span id="navProjects">Projets</span></a>
+            <a href="board.html" class="nav-link"><i class="fas fa-columns"></i><span id="navBoard">Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span id="navTasks">Tâches</span></a>
+            <a href="roles.html" class="nav-link active"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
         </div>
     </div>
     <div class="main-content">
         <div class="top-bar">
-            <h1 class="page-title"><i class="fas fa-tag"></i> Gestion des rôles</h1>
-            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+            <h1 class="page-title"><i class="fas fa-tag"></i> <span id="pageTitle">Gestion des rôles</span></h1>
+            <div class="user-badge">
+                <div class="date-badge" id="currentDate"></div>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider">
+                            <i class="fas fa-sun"></i>
+                            <i class="fas fa-moon"></i>
+                        </span>
+                    </label>
+                </div>
+                <select id="languageSelect" class="lang-selector">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+                <span id="userName">Chargement...</span>
+                <div class="avatar-mini" id="userAvatar">👤</div>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Déconnexion</span></button>
+            </div>
         </div>
-        <div style="margin-bottom:20px; text-align:right;"><button class="btn btn-primary" id="openAddRoleModal"><i class="fas fa-plus"></i> Nouveau rôle</button></div>
-        <div class="card"><table class="data-table"><thead><tr><th>Nom du rôle</th><th>Permissions</th><th>Actions</th></tr></thead><tbody id="rolesList"><tr><td colspan="3" style="text-align:center;">Chargement...</td></tr></tbody></table></div>
+        
+        <div style="margin-bottom:20px; text-align:right;">
+            <button class="btn btn-primary" id="openAddRoleModal"><i class="fas fa-plus"></i> <span id="newRoleBtnText">Nouveau rôle</span></button>
+        </div>
+        
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr><th id="thRoleName">Nom du rôle</th><th id="thPermissions">Permissions</th><th id="thActions">Actions</th></tr>
+                </thead>
+                <tbody id="rolesList"><tr><td colspan="3" style="text-align:center;" id="loadingRolesText">Chargement...</td></tr></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<!-- Modal Ajout/Modification Rôle -->
 <div id="roleModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Ajouter un rôle</h3>
         <input type="hidden" id="roleId">
-        <label>Nom du rôle</label>
+        <label id="roleNameLabel">Nom du rôle</label>
         <input type="text" id="roleNom" placeholder="Ex: Manager, Superviseur..." required>
         <div class="permission-group">
-            <h4>Permissions</h4>
-            <div class="permission-checkbox"><input type="checkbox" id="permCreateProjects"> <label>📁 Créer des projets</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permEditProjects"> <label>✏️ Modifier des projets</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permDeleteProjects"> <label>🗑️ Supprimer des projets</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permViewTasks"> <label>👁️ Voir les tâches</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permCreateTasks"> <label>✅ Créer des tâches</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permEditTasks"> <label>✏️ Modifier les tâches</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permDeleteTasks"> <label>🗑️ Supprimer des tâches</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permManageUsers"> <label>👥 Gérer les utilisateurs</label></div>
-            <div class="permission-checkbox"><input type="checkbox" id="permManageRoles"> <label>⚙️ Gérer les rôles</label></div>
+            <h4 id="permissionsTitle">Permissions</h4>
+            <div class="permission-checkbox"><input type="checkbox" id="permCreateProjects"> <label id="permCreateProjectsLabel">📁 Créer des projets</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permEditProjects"> <label id="permEditProjectsLabel">✏️ Modifier des projets</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permDeleteProjects"> <label id="permDeleteProjectsLabel">🗑️ Supprimer des projets</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permViewTasks"> <label id="permViewTasksLabel">👁️ Voir les tâches</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permCreateTasks"> <label id="permCreateTasksLabel">✅ Créer des tâches</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permEditTasks"> <label id="permEditTasksLabel">✏️ Modifier les tâches</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permDeleteTasks"> <label id="permDeleteTasksLabel">🗑️ Supprimer des tâches</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permManageUsers"> <label id="permManageUsersLabel">👥 Gérer les utilisateurs</label></div>
+            <div class="permission-checkbox"><input type="checkbox" id="permManageRoles"> <label id="permManageRolesLabel">⚙️ Gérer les rôles</label></div>
         </div>
         <div class="modal-buttons">
-            <button class="btn btn-secondary" id="closeRoleModal">Annuler</button>
-            <button class="btn btn-primary" id="saveRoleBtn">Enregistrer</button>
+            <button class="btn btn-secondary" id="closeRoleModal"><span id="cancelBtnText">Annuler</span></button>
+            <button class="btn btn-primary" id="saveRoleBtn"><span id="saveBtnText">Enregistrer</span></button>
         </div>
     </div>
 </div>
 
 <script>
+    const translations = {
+        fr: {
+            sidebarTitle: "CollabFlow", navDashboard: "Tableau de bord", navProjects: "Projets", navBoard: "Board Kanban",
+            navTasks: "Tâches", navRoles: "Rôles", navLabels: "Étiquettes", navProfile: "Profil",
+            pageTitle: "Gestion des rôles", logoutText: "Déconnexion", newRoleBtnText: "Nouveau rôle",
+            thRoleName: "Nom du rôle", thPermissions: "Permissions", thActions: "Actions", loadingRolesText: "Chargement...",
+            modalTitleAdd: "Ajouter un rôle", modalTitleEdit: "Modifier le rôle", roleNameLabel: "Nom du rôle",
+            permissionsTitle: "Permissions", cancelBtnText: "Annuler", saveBtnText: "Enregistrer",
+            permCreateProjectsLabel: "📁 Créer des projets", permEditProjectsLabel: "✏️ Modifier des projets",
+            permDeleteProjectsLabel: "🗑️ Supprimer des projets", permViewTasksLabel: "👁️ Voir les tâches",
+            permCreateTasksLabel: "✅ Créer des tâches", permEditTasksLabel: "✏️ Modifier les tâches",
+            permDeleteTasksLabel: "🗑️ Supprimer des tâches", permManageUsersLabel: "👥 Gérer les utilisateurs",
+            permManageRolesLabel: "⚙️ Gérer les rôles", roleCreated: "Rôle créé avec succès", roleUpdated: "Rôle modifié avec succès",
+            roleDeleted: "Rôle supprimé avec succès", nameRequired: "Le nom du rôle est requis",
+            errorLoad: "Erreur de chargement", errorSave: "Erreur lors de la sauvegarde", errorDelete: "Erreur lors de la suppression",
+            errorConnection: "Erreur de connexion", confirmDelete: "Supprimer ce rôle ?", noRoles: "Aucun rôle",
+            adminBadge: "Admin", roleBadge: "Rôle", noPermissions: "Aucune permission"
+        },
+        en: {
+            sidebarTitle: "CollabFlow", navDashboard: "Dashboard", navProjects: "Projects", navBoard: "Kanban Board",
+            navTasks: "Tasks", navRoles: "Roles", navLabels: "Labels", navProfile: "Profile",
+            pageTitle: "Role Management", logoutText: "Logout", newRoleBtnText: "New role",
+            thRoleName: "Role name", thPermissions: "Permissions", thActions: "Actions", loadingRolesText: "Loading...",
+            modalTitleAdd: "Add role", modalTitleEdit: "Edit role", roleNameLabel: "Role name",
+            permissionsTitle: "Permissions", cancelBtnText: "Cancel", saveBtnText: "Save",
+            permCreateProjectsLabel: "📁 Create projects", permEditProjectsLabel: "✏️ Edit projects",
+            permDeleteProjectsLabel: "🗑️ Delete projects", permViewTasksLabel: "👁️ View tasks",
+            permCreateTasksLabel: "✅ Create tasks", permEditTasksLabel: "✏️ Edit tasks",
+            permDeleteTasksLabel: "🗑️ Delete tasks", permManageUsersLabel: "👥 Manage users",
+            permManageRolesLabel: "⚙️ Manage roles", roleCreated: "Role created", roleUpdated: "Role updated",
+            roleDeleted: "Role deleted", nameRequired: "Name required",
+            errorLoad: "Error loading", errorSave: "Error saving", errorDelete: "Error deleting",
+            errorConnection: "Connection error", confirmDelete: "Delete this role?", noRoles: "No roles",
+            adminBadge: "Admin", roleBadge: "Role", noPermissions: "No permissions"
+        },
+        ar: {
+            sidebarTitle: "كولاب فلو", navDashboard: "لوحة القيادة", navProjects: "المشاريع", navBoard: "مجلس كانبان",
+            navTasks: "المهام", navRoles: "الأدوار", navLabels: "العلامات", navProfile: "الملف الشخصي",
+            pageTitle: "إدارة الأدوار", logoutText: "تسجيل خروج", newRoleBtnText: "دور جديد",
+            thRoleName: "اسم الدور", thPermissions: "الصلاحيات", thActions: "إجراءات", loadingRolesText: "جاري التحميل...",
+            modalTitleAdd: "إضافة دور", modalTitleEdit: "تعديل الدور", roleNameLabel: "اسم الدور",
+            permissionsTitle: "الصلاحيات", cancelBtnText: "إلغاء", saveBtnText: "حفظ",
+            permCreateProjectsLabel: "📁 إنشاء مشاريع", permEditProjectsLabel: "✏️ تعديل مشاريع",
+            permDeleteProjectsLabel: "🗑️ حذف مشاريع", permViewTasksLabel: "👁️ عرض المهام",
+            permCreateTasksLabel: "✅ إنشاء مهام", permEditTasksLabel: "✏️ تعديل مهام",
+            permDeleteTasksLabel: "🗑️ حذف مهام", permManageUsersLabel: "👥 إدارة المستخدمين",
+            permManageRolesLabel: "⚙️ إدارة الأدوار", roleCreated: "تم إنشاء الدور", roleUpdated: "تم تعديل الدور",
+            roleDeleted: "تم حذف الدور", nameRequired: "اسم الدور مطلوب",
+            errorLoad: "خطأ في التحميل", errorSave: "خطأ في الحفظ", errorDelete: "خطأ في الحذف",
+            errorConnection: "خطأ في الاتصال", confirmDelete: "حذف هذا الدور؟", noRoles: "لا توجد أدوار",
+            adminBadge: "مدير", roleBadge: "دور", noPermissions: "لا توجد صلاحيات"
+        }
+    };
+    
+    let currentLang = localStorage.getItem('language') || 'fr';
+    let currentTheme = localStorage.getItem('theme') || 'light';
     const API_URL = 'http://localhost:3002/api';
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
@@ -104,26 +435,82 @@
     let roles = [];
     
     function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
+        const n = document.createElement('div');
+        n.className = `notification notification-${type}`;
+        n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
+    }
+    
+    function initDarkMode() {
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = true;
+        }
+    }
+    
+    function toggleDarkMode() {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+    
+    function updateTexts() {
+        const t = translations[currentLang];
+        document.getElementById('sidebarTitle').innerText = t.sidebarTitle;
+        document.getElementById('navDashboard').innerText = t.navDashboard;
+        document.getElementById('navProjects').innerText = t.navProjects;
+        document.getElementById('navBoard').innerText = t.navBoard;
+        document.getElementById('navTasks').innerText = t.navTasks;
+        document.getElementById('navRoles').innerText = t.navRoles;
+        document.getElementById('navLabels').innerText = t.navLabels;
+        document.getElementById('navProfile').innerText = t.navProfile;
+        document.getElementById('pageTitle').innerText = t.pageTitle;
+        document.getElementById('logoutText').innerText = t.logoutText;
+        document.getElementById('newRoleBtnText').innerText = t.newRoleBtnText;
+        document.getElementById('thRoleName').innerText = t.thRoleName;
+        document.getElementById('thPermissions').innerText = t.thPermissions;
+        document.getElementById('thActions').innerText = t.thActions;
+        document.getElementById('loadingRolesText').innerText = t.loadingRolesText;
+        document.getElementById('roleNameLabel').innerText = t.roleNameLabel;
+        document.getElementById('permissionsTitle').innerText = t.permissionsTitle;
+        document.getElementById('permCreateProjectsLabel').innerHTML = t.permCreateProjectsLabel;
+        document.getElementById('permEditProjectsLabel').innerHTML = t.permEditProjectsLabel;
+        document.getElementById('permDeleteProjectsLabel').innerHTML = t.permDeleteProjectsLabel;
+        document.getElementById('permViewTasksLabel').innerHTML = t.permViewTasksLabel;
+        document.getElementById('permCreateTasksLabel').innerHTML = t.permCreateTasksLabel;
+        document.getElementById('permEditTasksLabel').innerHTML = t.permEditTasksLabel;
+        document.getElementById('permDeleteTasksLabel').innerHTML = t.permDeleteTasksLabel;
+        document.getElementById('permManageUsersLabel').innerHTML = t.permManageUsersLabel;
+        document.getElementById('permManageRolesLabel').innerHTML = t.permManageRolesLabel;
+        document.getElementById('cancelBtnText').innerHTML = t.cancelBtnText;
+        document.getElementById('saveBtnText').innerHTML = t.saveBtnText;
+        document.body.classList.toggle('rtl', currentLang === 'ar');
+    }
+    
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('language', lang);
+        document.getElementById('languageSelect').value = lang;
+        updateTexts();
+        loadRoles();
     }
     
     function getPermissionsList(role) {
+        const t = translations[currentLang];
         const perms = [];
-        if (role.permissions?.includes('create_projects')) perms.push('📁 Créer projets');
-        if (role.permissions?.includes('edit_projects')) perms.push('✏️ Modifier projets');
-        if (role.permissions?.includes('delete_projects')) perms.push('🗑️ Supprimer projets');
-        if (role.permissions?.includes('view_tasks')) perms.push('👁️ Voir tâches');
-        if (role.permissions?.includes('create_tasks')) perms.push('✅ Créer tâches');
-        if (role.permissions?.includes('edit_tasks')) perms.push('✏️ Modifier tâches');
-        if (role.permissions?.includes('delete_tasks')) perms.push('🗑️ Supprimer tâches');
-        if (role.permissions?.includes('manage_users')) perms.push('👥 Gérer utilisateurs');
-        if (role.permissions?.includes('manage_roles')) perms.push('⚙️ Gérer rôles');
-        if (role.permissions?.includes('*')) perms.push('👑 Toutes les permissions');
-        return perms.length > 0 ? perms.join(', ') : 'Aucune permission';
+        if (role.permissions?.includes('create_projects')) perms.push('📁 ' + t.permCreateProjectsLabel.replace('📁 ', ''));
+        if (role.permissions?.includes('edit_projects')) perms.push('✏️ ' + t.permEditProjectsLabel.replace('✏️ ', ''));
+        if (role.permissions?.includes('delete_projects')) perms.push('🗑️ ' + t.permDeleteProjectsLabel.replace('🗑️ ', ''));
+        if (role.permissions?.includes('view_tasks')) perms.push('👁️ ' + t.permViewTasksLabel.replace('👁️ ', ''));
+        if (role.permissions?.includes('create_tasks')) perms.push('✅ ' + t.permCreateTasksLabel.replace('✅ ', ''));
+        if (role.permissions?.includes('edit_tasks')) perms.push('✏️ ' + t.permEditTasksLabel.replace('✏️ ', ''));
+        if (role.permissions?.includes('delete_tasks')) perms.push('🗑️ ' + t.permDeleteTasksLabel.replace('🗑️ ', ''));
+        if (role.permissions?.includes('manage_users')) perms.push('👥 ' + t.permManageUsersLabel.replace('👥 ', ''));
+        if (role.permissions?.includes('manage_roles')) perms.push('⚙️ ' + t.permManageRolesLabel.replace('⚙️ ', ''));
+        if (role.permissions?.includes('*')) perms.push('👑 ' + (currentLang === 'fr' ? 'Toutes les permissions' : currentLang === 'en' ? 'All permissions' : 'جميع الصلاحيات'));
+        return perms.length > 0 ? perms.join(', ') : t.noPermissions;
     }
     
     async function loadRoles() {
@@ -132,38 +519,30 @@
             if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
             roles = await res.json();
             const tbody = document.getElementById('rolesList');
-            if (roles.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Aucun rôle. Cliquez sur "Nouveau rôle" pour commencer.</td></tr>';
-                return;
-            }
+            const t = translations[currentLang];
+            if (roles.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">${t.noRoles}</td></tr>`; return; }
             tbody.innerHTML = roles.map(r => `
                 <tr>
-                    <td><strong>${escapeHtml(r.nom)}</strong> <span class="badge ${r.nom === 'admin' ? 'badge-admin' : 'badge-user'}">${r.nom === 'admin' ? 'Admin' : 'Rôle'}</span></td>
+                    <td><strong>${escapeHtml(r.nom)}</strong> <span class="badge ${r.nom === 'admin' ? 'badge-admin' : 'badge-user'}">${r.nom === 'admin' ? t.adminBadge : t.roleBadge}</span></td>
                     <td><small>${getPermissionsList(r)}</small></td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editRole('${r._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deleteRole('${r._id}')" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
-                     </td>
-                 </tr>
+                    <td><button class="btn btn-warning" onclick="editRole('${r._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="deleteRole('${r._id}')" style="padding:5px 10px;"><i class="fas fa-trash"></i></button></td>
+                </tr>
             `).join('');
-        } catch (error) {
-            console.error('Erreur:', error);
-            showNotification('Erreur de chargement des rôles', 'error');
-        }
+        } catch (error) { showNotification(translations[currentLang].errorLoad, 'error'); }
     }
     
     function getSelectedPermissions() {
-        const permissions = [];
-        if (document.getElementById('permCreateProjects').checked) permissions.push('create_projects');
-        if (document.getElementById('permEditProjects').checked) permissions.push('edit_projects');
-        if (document.getElementById('permDeleteProjects').checked) permissions.push('delete_projects');
-        if (document.getElementById('permViewTasks').checked) permissions.push('view_tasks');
-        if (document.getElementById('permCreateTasks').checked) permissions.push('create_tasks');
-        if (document.getElementById('permEditTasks').checked) permissions.push('edit_tasks');
-        if (document.getElementById('permDeleteTasks').checked) permissions.push('delete_tasks');
-        if (document.getElementById('permManageUsers').checked) permissions.push('manage_users');
-        if (document.getElementById('permManageRoles').checked) permissions.push('manage_roles');
-        return permissions;
+        const perms = [];
+        if (document.getElementById('permCreateProjects').checked) perms.push('create_projects');
+        if (document.getElementById('permEditProjects').checked) perms.push('edit_projects');
+        if (document.getElementById('permDeleteProjects').checked) perms.push('delete_projects');
+        if (document.getElementById('permViewTasks').checked) perms.push('view_tasks');
+        if (document.getElementById('permCreateTasks').checked) perms.push('create_tasks');
+        if (document.getElementById('permEditTasks').checked) perms.push('edit_tasks');
+        if (document.getElementById('permDeleteTasks').checked) perms.push('delete_tasks');
+        if (document.getElementById('permManageUsers').checked) perms.push('manage_users');
+        if (document.getElementById('permManageRoles').checked) perms.push('manage_roles');
+        return perms;
     }
     
     function setPermissionsCheckboxes(permissions) {
@@ -182,42 +561,22 @@
         const id = document.getElementById('roleId').value;
         const nom = document.getElementById('roleNom').value.trim();
         const permissions = getSelectedPermissions();
-        
-        if (!nom) {
-            showNotification('Le nom du rôle est requis', 'error');
-            return;
-        }
-        
+        const t = translations[currentLang];
+        if (!nom) { showNotification(t.nameRequired, 'error'); return; }
         const data = { nom, permissions };
-        
         try {
             let response;
             if (id) {
-                response = await fetch(`${API_URL}/roles/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(data)
-                });
+                response = await fetch(`${API_URL}/roles/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
             } else {
-                response = await fetch(`${API_URL}/roles`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(data)
-                });
+                response = await fetch(`${API_URL}/roles`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
             }
-            
             if (response.ok) {
-                showNotification(id ? 'Rôle modifié avec succès' : 'Rôle créé avec succès', 'success');
+                showNotification(id ? t.roleUpdated : t.roleCreated, 'success');
                 closeModal();
                 loadRoles();
-            } else {
-                const error = await response.json();
-                showNotification(error.message || 'Erreur lors de la sauvegarde', 'error');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            showNotification('Erreur de connexion au serveur', 'error');
-        }
+            } else { showNotification(t.errorSave, 'error'); }
+        } catch (error) { showNotification(t.errorConnection, 'error'); }
     }
     
     async function editRole(id) {
@@ -225,90 +584,57 @@
             const res = await fetch(`${API_URL}/roles/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (res.ok) {
                 const role = await res.json();
-                document.getElementById('modalTitle').innerText = 'Modifier le rôle';
+                document.getElementById('modalTitle').innerText = translations[currentLang].modalTitleEdit;
                 document.getElementById('roleId').value = role._id;
                 document.getElementById('roleNom').value = role.nom;
                 setPermissionsCheckboxes(role.permissions || []);
                 document.getElementById('roleModal').style.display = 'flex';
-            } else {
-                showNotification('Erreur lors du chargement du rôle', 'error');
-            }
-        } catch (error) {
-            showNotification('Erreur de connexion', 'error');
-        }
+            } else { showNotification(translations[currentLang].errorLoad, 'error'); }
+        } catch (error) { showNotification(translations[currentLang].errorConnection, 'error'); }
     }
     
     async function deleteRole(id) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce rôle ?')) return;
-        
+        const t = translations[currentLang];
+        if (!confirm(t.confirmDelete)) return;
         try {
-            const response = await fetch(`${API_URL}/roles/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (response.ok) {
-                showNotification('Rôle supprimé avec succès', 'success');
-                loadRoles();
-            } else {
-                showNotification('Erreur lors de la suppression', 'error');
-            }
-        } catch (error) {
-            showNotification('Erreur de connexion', 'error');
-        }
+            const response = await fetch(`${API_URL}/roles/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) { showNotification(t.roleDeleted, 'success'); loadRoles(); }
+            else { showNotification(t.errorDelete, 'error'); }
+        } catch (error) { showNotification(t.errorConnection, 'error'); }
     }
     
     function openAddModal() {
-        document.getElementById('modalTitle').innerText = 'Ajouter un rôle';
+        document.getElementById('modalTitle').innerText = translations[currentLang].modalTitleAdd;
         document.getElementById('roleId').value = '';
         document.getElementById('roleNom').value = '';
-        // Décocher toutes les permissions
-        const checkboxes = document.querySelectorAll('.permission-checkbox input');
-        checkboxes.forEach(cb => cb.checked = false);
+        document.querySelectorAll('.permission-checkbox input').forEach(cb => cb.checked = false);
         document.getElementById('roleModal').style.display = 'flex';
     }
     
-    function closeModal() {
-        document.getElementById('roleModal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('roleModal').style.display = 'none'; }
     
     async function loadUserInfo() {
         try {
-            const response = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (response.ok) {
-                const user = await response.json();
-                document.getElementById('userName').innerText = user.nom;
-                document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤';
-            }
+            const res = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res.ok) { const user = await res.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤'; }
         } catch (error) {}
     }
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
     
-    function logout() {
-        localStorage.clear();
-        window.location.href = 'login.html';
-    }
-    
-    // Événements
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     document.getElementById('openAddRoleModal').onclick = openAddModal;
     document.getElementById('closeRoleModal').onclick = closeModal;
     document.getElementById('saveRoleBtn').onclick = saveRole;
+    document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+    document.getElementById('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
     window.editRole = editRole;
     window.deleteRole = deleteRole;
-    window.logout = logout;
+    window.onclick = (e) => { if (e.target.classList.contains('modal')) closeModal(); };
     
-    // Fermer la modale en cliquant à l'extérieur
-    window.onclick = (event) => {
-        if (event.target.classList.contains('modal')) {
-            closeModal();
-        }
-    };
-    
+    initDarkMode();
+    updateTexts();
     loadUserInfo();
     loadRoles();
 </script>

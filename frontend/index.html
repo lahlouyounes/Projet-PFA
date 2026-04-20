@@ -7,60 +7,518 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* ============================================
+           VARIABLES LIGHT MODE (DÉFAUT)
+        ============================================ */
+        :root {
+            --bg-primary: #f4f5f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f8f9fa;
+            --text-primary: #1a1a2e;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
+            --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-text: #ffffff;
+            --stat-bg: #ffffff;
+            --card-bg: #ffffff;
+            --topbar-bg: #ffffff;
+        }
+
+        /* ============================================
+           DARK MODE VARIABLES
+        ============================================ */
+        [data-theme="dark"] {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #11151c;
+            --bg-card: #14181f;
+            --bg-hover: #1e2430;
+            --text-primary: #f0f3f8;
+            --text-secondary: #8e9aaf;
+            --text-muted: #5b677b;
+            --border-color: #232832;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --sidebar-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --sidebar-text: #ffffff;
+            --stat-bg: #14181f;
+            --card-bg: #14181f;
+            --topbar-bg: #11151c;
+        }
+
+        /* ============================================
+           STYLES GLOBAUX
+        ============================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
         .app { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; }
+        
+        /* Sidebar */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-bg); 
+            color: var(--sidebar-text); 
+            position: fixed; 
+            height: 100vh; 
+            transition: background 0.3s ease;
+        }
+        
         .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; }
-        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; cursor: pointer; }
+        .nav-link { 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--sidebar-text); 
+            text-decoration: none; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        
+        /* Main Content */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; }
-        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .page-title { font-size: 1.3rem; color: #333; }
+        
+        /* Top Bar */
+        .top-bar { 
+            background: var(--topbar-bg); 
+            border-radius: 12px; 
+            padding: 15px 25px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: background 0.3s ease;
+        }
+        
+        .page-title { font-size: 1.3rem; color: var(--text-primary); }
+        
+        /* User Badge */
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .stat-card { 
+            background: var(--stat-bg); 
+            padding: 20px; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
         .stat-number { font-size: 2rem; font-weight: bold; color: #667eea; }
+        
+        /* Charts */
         .charts-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
-        .chart-card { background: white; padding: 20px; border-radius: 12px; }
-        .card { background: white; padding: 20px; border-radius: 12px; }
+        .chart-card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        .chart-card h3 { color: var(--text-primary); margin-bottom: 15px; }
+        
+        /* Card */
+        .card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        .card h3 { color: var(--text-primary); margin-bottom: 15px; }
+        
+        /* Activity Timeline */
         .activity-timeline { list-style: none; }
-        .activity-timeline li { display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid #eee; }
-        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
-        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } .stats-grid { grid-template-columns: 1fr; } .charts-row { grid-template-columns: 1fr; } }
+        .activity-timeline li { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 12px; 
+            border-bottom: 1px solid var(--border-color); 
+            color: var(--text-secondary);
+        }
+        
+        /* Buttons */
+        .logout-btn { 
+            background: none; 
+            border: none; 
+            color: #e74c3c; 
+            cursor: pointer; 
+            font-size: 1rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .logout-btn:hover { background: rgba(231, 76, 60, 0.1); }
+        
+        /* Dark Mode Toggle Switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 30px;
+            position: relative;
+            width: 54px;
+        }
+        .theme-switch input {
+            display: none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            background-color: white;
+            bottom: 3px;
+            content: "";
+            height: 24px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 24px;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        .slider .fa-sun, .slider .fa-moon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: white;
+        }
+        .slider .fa-sun { left: 8px; }
+        .slider .fa-moon { right: 8px; }
+        
+        /* Language Selector */
+        .lang-selector {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .lang-selector:hover {
+            border-color: #667eea;
+        }
+        .lang-selector option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* RTL Support */
+        body.rtl {
+            direction: rtl;
+        }
+        body.rtl .sidebar {
+            right: 0;
+            left: auto;
+        }
+        body.rtl .main-content {
+            margin-right: 260px;
+            margin-left: 0;
+        }
+        body.rtl .nav-link.active {
+            border-left: none;
+            border-right: 3px solid white;
+        }
+        body.rtl .stat-card {
+            flex-direction: row-reverse;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) { 
+            .sidebar { width: 70px; } 
+            .sidebar span { display: none; } 
+            .main-content { margin-left: 70px; } 
+            .stats-grid { grid-template-columns: 1fr; } 
+            .charts-row { grid-template-columns: 1fr; }
+            body.rtl .main-content { margin-right: 70px; margin-left: 0; }
+        }
+        
+        /* Notification */
+        .theme-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            animation: fadeInOut 2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        
+        /* Scrollbar Dark Mode */
+        [data-theme="dark"] ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        [data-theme="dark"] ::-webkit-scrollbar-track {
+            background: #1a1f2a;
+            border-radius: 10px;
+        }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb {
+            background: #2a313c;
+            border-radius: 10px;
+        }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="sidebar">
-        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="logo"><i class="fas fa-trello"></i><span id="sidebarTitle">CollabFlow</span></div>
         <div class="nav-items">
-            <div class="nav-link active" onclick="location.href='index.html'"><i class="fas fa-chart-line"></i><span>Dashboard</span></div>
-            <div class="nav-link" onclick="location.href='projets.html'"><i class="fas fa-folder-open"></i><span>Projets</span></div>
-            <div class="nav-link" onclick="location.href='board.html'"><i class="fas fa-columns"></i><span>Board</span></div>
-            <div class="nav-link" onclick="location.href='taches.html'"><i class="fas fa-tasks"></i><span>Tâches</span></div>
-             <a href="roles.html" class="nav-link active"><i class="fas fa-tag"></i><span>Rôles</span></a>
-            <div class="nav-link" onclick="window.location.href='etiquette.html'"><i class="fas fa-tags"></i><span>Étiquettes</span></div>
-            <div class="nav-link" onclick="location.href='profil.html'"><i class="fas fa-user-circle"></i><span>Profil</span></div>
+            <div class="nav-link active" onclick="location.href='index.html'"><i class="fas fa-chart-line"></i><span id="navDashboard">Dashboard</span></div>
+            <div class="nav-link" onclick="location.href='projets.html'"><i class="fas fa-folder-open"></i><span id="navProjects">Projets</span></div>
+            <div class="nav-link" onclick="location.href='board.html'"><i class="fas fa-columns"></i><span id="navBoard">Board</span></div>
+            <div class="nav-link" onclick="location.href='taches.html'"><i class="fas fa-tasks"></i><span id="navTasks">Tâches</span></div>
+            <div class="nav-link" onclick="location.href='roles.html'"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></div>
+            <div class="nav-link" onclick="location.href='etiquette.html'"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></div>
+            <div class="nav-link" onclick="location.href='profil.html'"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></div>
         </div>
     </div>
     <div class="main-content">
         <div class="top-bar">
-            <h1 class="page-title">Tableau de bord</h1>
-            <div><span id="userName">Chargement...</span> <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+            <h1 class="page-title" id="pageTitle">Tableau de bord</h1>
+            <div class="user-badge">
+                <div class="date-badge" id="currentDate"></div>
+                
+                <!-- Dark Mode Toggle -->
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider">
+                            <i class="fas fa-sun"></i>
+                            <i class="fas fa-moon"></i>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- Language Selector -->
+                <select id="languageSelect" class="lang-selector">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+                
+                <span id="userName">Chargement...</span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Déconnexion</span></button>
+            </div>
         </div>
         
         <div class="stats-grid" id="statsGrid"></div>
         
         <div class="charts-row">
-            <div class="chart-card"><h3>Avancement des projets</h3><canvas id="projectsChart"></canvas></div>
-            <div class="chart-card"><h3>Répartition des tâches</h3><canvas id="tasksChart"></canvas></div>
+            <div class="chart-card"><h3 id="projectsChartTitle">Avancement des projets</h3><canvas id="projectsChart"></canvas></div>
+            <div class="chart-card"><h3 id="tasksChartTitle">Répartition des tâches</h3><canvas id="tasksChart"></canvas></div>
         </div>
         
-        <div class="card"><h3>Activité récente</h3><ul class="activity-timeline" id="activityList"></ul></div>
+        <div class="card"><h3 id="recentActivityTitle">Activité récente</h3><ul class="activity-timeline" id="activityList"></ul></div>
     </div>
 </div>
 
 <script>
+    // ============================================
+    // TRADUCTIONS
+    // ============================================
+    const translations = {
+        fr: {
+            sidebarTitle: "CollabFlow",
+            navDashboard: "Tableau de bord",
+            navProjects: "Projets",
+            navBoard: "Board Kanban",
+            navTasks: "Tâches",
+            navRoles: "Rôles",
+            navLabels: "Étiquettes",
+            navProfile: "Profil",
+            pageTitle: "Tableau de bord",
+            projects: "Projets",
+            tasksCompleted: "Tâches terminées",
+            tasksInProgress: "Tâches en cours",
+            users: "Utilisateurs",
+            projectsChartTitle: "Avancement des projets",
+            tasksChartTitle: "Répartition des tâches",
+            recentActivityTitle: "Activité récente",
+            tasksDone: "tâches terminées",
+            activeProjects: "projets actifs",
+            teamMembers: "membres dans l'équipe",
+            avgProgress: "Avancement moyen",
+            logout: "Déconnexion",
+            loading: "Chargement..."
+        },
+        en: {
+            sidebarTitle: "CollabFlow",
+            navDashboard: "Dashboard",
+            navProjects: "Projects",
+            navBoard: "Kanban Board",
+            navTasks: "Tasks",
+            navRoles: "Roles",
+            navLabels: "Labels",
+            navProfile: "Profile",
+            pageTitle: "Dashboard",
+            projects: "Projects",
+            tasksCompleted: "Completed tasks",
+            tasksInProgress: "Tasks in progress",
+            users: "Users",
+            projectsChartTitle: "Projects Progress",
+            tasksChartTitle: "Tasks Distribution",
+            recentActivityTitle: "Recent Activity",
+            tasksDone: "tasks completed",
+            activeProjects: "active projects",
+            teamMembers: "team members",
+            avgProgress: "Average progress",
+            logout: "Logout",
+            loading: "Loading..."
+        },
+        ar: {
+            sidebarTitle: "كولاب فلو",
+            navDashboard: "لوحة القيادة",
+            navProjects: "المشاريع",
+            navBoard: "مجلس كانبان",
+            navTasks: "المهام",
+            navRoles: "الأدوار",
+            navLabels: "العلامات",
+            navProfile: "الملف الشخصي",
+            pageTitle: "لوحة القيادة",
+            projects: "المشاريع",
+            tasksCompleted: "المهام المنجزة",
+            tasksInProgress: "المهام قيد التنفيذ",
+            users: "المستخدمين",
+            projectsChartTitle: "تقدم المشاريع",
+            tasksChartTitle: "توزيع المهام",
+            recentActivityTitle: "النشاط الأخير",
+            tasksDone: "مهمة منجزة",
+            activeProjects: "مشروع نشط",
+            teamMembers: "عضو في الفريق",
+            avgProgress: "متوسط التقدم",
+            logout: "تسجيل خروج",
+            loading: "جاري التحميل..."
+        }
+    };
+    
+    let currentLang = localStorage.getItem('language') || 'fr';
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // ============================================
+    // DARK MODE FUNCTIONS
+    // ============================================
+    function initDarkMode() {
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = true;
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    }
+    
+    function toggleDarkMode() {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        showNotification(newTheme === 'dark' ? '🌙 Mode sombre activé' : '☀️ Mode clair activé');
+    }
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 2000);
+    }
+    
+    // ============================================
+    // LANGUAGE FUNCTIONS
+    // ============================================
+    function updateTexts() {
+        const t = translations[currentLang];
+        document.getElementById('sidebarTitle').innerText = t.sidebarTitle;
+        document.getElementById('navDashboard').innerText = t.navDashboard;
+        document.getElementById('navProjects').innerText = t.navProjects;
+        document.getElementById('navBoard').innerText = t.navBoard;
+        document.getElementById('navTasks').innerText = t.navTasks;
+        document.getElementById('navRoles').innerText = t.navRoles;
+        document.getElementById('navLabels').innerText = t.navLabels;
+        document.getElementById('navProfile').innerText = t.navProfile;
+        document.getElementById('pageTitle').innerText = t.pageTitle;
+        document.getElementById('projectsChartTitle').innerText = t.projectsChartTitle;
+        document.getElementById('tasksChartTitle').innerText = t.tasksChartTitle;
+        document.getElementById('recentActivityTitle').innerText = t.recentActivityTitle;
+        document.getElementById('logoutText').innerText = t.logout;
+        
+        // RTL pour l'arabe
+        if (currentLang === 'ar') {
+            document.body.classList.add('rtl');
+        } else {
+            document.body.classList.remove('rtl');
+        }
+        
+        // Mettre à jour les graphiques si nécessaire
+        if (projectsChart && tasksChart) {
+            loadDashboard();
+        }
+    }
+    
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('language', lang);
+        document.getElementById('languageSelect').value = lang;
+        updateTexts();
+        loadDashboard(); // Recharger les données avec les nouvelles traductions
+    }
+    
+    // ============================================
+    // DASHBOARD FUNCTIONS
+    // ============================================
     const API_URL = 'http://localhost:3002/api';
     const token = localStorage.getItem('token');
     
@@ -70,7 +528,6 @@
     
     async function loadDashboard() {
         try {
-            // Charger les données
             const [projectsRes, tasksRes, usersRes] = await Promise.all([
                 fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(`${API_URL}/taches`, { headers: { 'Authorization': `Bearer ${token}` } }),
@@ -83,40 +540,38 @@
             const tasks = await tasksRes.json();
             const users = await usersRes.json();
             
-            // Stats
             const todoCount = tasks.filter(t => t.status === 'todo').length;
             const progressCount = tasks.filter(t => t.status === 'in-progress').length;
             const doneCount = tasks.filter(t => t.status === 'done').length;
             
+            const t = translations[currentLang];
+            
             document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card" onclick="location.href='projets.html'"><div><h3>Projets</h3><div class="stat-number">${projects.length}</div></div><i class="fas fa-folder-open"></i></div>
-                <div class="stat-card" onclick="location.href='taches.html'"><div><h3>Tâches terminées</h3><div class="stat-number">${doneCount}</div></div><i class="fas fa-check-circle"></i></div>
-                <div class="stat-card" onclick="location.href='taches.html'"><div><h3>Tâches en cours</h3><div class="stat-number">${progressCount}</div></div><i class="fas fa-spinner"></i></div>
-                <div class="stat-card" onclick="location.href='profil.html'"><div><h3>Utilisateurs</h3><div class="stat-number">${users.length}</div></div><i class="fas fa-users"></i></div>
+                <div class="stat-card" onclick="location.href='projets.html'"><div><h3>${t.projects}</h3><div class="stat-number">${projects.length}</div></div><i class="fas fa-folder-open"></i></div>
+                <div class="stat-card" onclick="location.href='taches.html'"><div><h3>${t.tasksCompleted}</h3><div class="stat-number">${doneCount}</div></div><i class="fas fa-check-circle"></i></div>
+                <div class="stat-card" onclick="location.href='taches.html'"><div><h3>${t.tasksInProgress}</h3><div class="stat-number">${progressCount}</div></div><i class="fas fa-spinner"></i></div>
+                <div class="stat-card" onclick="location.href='profil.html'"><div><h3>${t.users}</h3><div class="stat-number">${users.length}</div></div><i class="fas fa-users"></i></div>
             `;
             
-            // Graphique projets
             if (projectsChart) projectsChart.destroy();
             projectsChart = new Chart(document.getElementById('projectsChart'), {
                 type: 'bar',
-                data: { labels: projects.map(p => p.nom), datasets: [{ label: 'Avancement (%)', data: projects.map(p => p.avancement || 0), backgroundColor: '#667eea' }] },
-                options: { responsive: true, scales: { y: { max: 100 } } }
+                data: { labels: projects.map(p => p.nom), datasets: [{ label: t.projectsChartTitle, data: projects.map(p => p.avancement || 0), backgroundColor: '#667eea' }] },
+                options: { responsive: true, scales: { y: { max: 100, title: { display: true, text: '%' } } } }
             });
             
-            // Graphique tâches
             if (tasksChart) tasksChart.destroy();
             tasksChart = new Chart(document.getElementById('tasksChart'), {
                 type: 'doughnut',
                 data: { labels: ['À faire', 'En cours', 'Terminées'], datasets: [{ data: [todoCount, progressCount, doneCount], backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e'] }] }
             });
             
-            // Activités
             const avgProgress = projects.length ? Math.round(projects.reduce((a,b) => a + (b.avancement||0), 0) / projects.length) : 0;
             document.getElementById('activityList').innerHTML = `
-                <li><i class="fas fa-check-circle" style="color:#22c55e"></i> ${doneCount} tâches terminées</li>
-                <li><i class="fas fa-folder-open" style="color:#3b82f6"></i> ${projects.length} projets actifs</li>
-                <li><i class="fas fa-users" style="color:#8b5cf6"></i> ${users.length} utilisateurs</li>
-                <li><i class="fas fa-chart-line" style="color:#f59e0b"></i> Avancement moyen: ${avgProgress}%</li>
+                <li><i class="fas fa-check-circle" style="color:#22c55e"></i> ${doneCount} ${t.tasksDone}</li>
+                <li><i class="fas fa-folder-open" style="color:#3b82f6"></i> ${projects.length} ${t.activeProjects}</li>
+                <li><i class="fas fa-users" style="color:#8b5cf6"></i> ${users.length} ${t.teamMembers}</li>
+                <li><i class="fas fa-chart-line" style="color:#f59e0b"></i> ${t.avgProgress}: ${avgProgress}%</li>
             `;
         } catch (error) {
             console.error('Erreur:', error);
@@ -132,6 +587,17 @@
     }
     
     function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+    
+    // Date
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    
+    // Initialisation
+    initDarkMode();
+    updateTexts();
+    
+    // Event Listeners
+    document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+    document.getElementById('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
     
     loadUser();
     loadDashboard();

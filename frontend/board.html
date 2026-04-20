@@ -7,83 +7,385 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
+        /* ============================================
+           VARIABLES LIGHT MODE (DÉFAUT)
+        ============================================ */
+        :root {
+            --bg-primary: #f4f5f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f8f9fa;
+            --text-primary: #1a1a2e;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
+            --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-text: #ffffff;
+            --kanban-col-bg: #f8f9fa;
+            --task-card-bg: #ffffff;
+            --col-header-bg: #ffffff;
+        }
+
+        /* ============================================
+           DARK MODE VARIABLES
+        ============================================ */
+        [data-theme="dark"] {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #11151c;
+            --bg-card: #14181f;
+            --bg-hover: #1e2430;
+            --text-primary: #f0f3f8;
+            --text-secondary: #8e9aaf;
+            --text-muted: #5b677b;
+            --border-color: #232832;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --sidebar-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --sidebar-text: #ffffff;
+            --kanban-col-bg: #11161f;
+            --task-card-bg: #1a1f2a;
+            --col-header-bg: #11151c;
+        }
+
+        /* ============================================
+           STYLES GLOBAUX
+        ============================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f5f7; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
         .app { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        
+        /* Sidebar */
+        .sidebar { 
+            width: 260px; 
+            background: var(--sidebar-bg); 
+            color: var(--sidebar-text); 
+            position: fixed; 
+            height: 100vh; 
+            overflow-y: auto;
+            transition: background 0.3s ease;
+        }
+        
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            padding: 25px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .nav-link { 
+            padding: 12px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--sidebar-text); 
+            text-decoration: none; 
+            transition: 0.3s; 
+        }
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+        
+        /* Main Content */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; }
-        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .page-title { font-size: 1.3rem; color: #333; }
-        .user-badge { display: flex; align-items: center; gap: 15px; }
-        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        
+        /* Top Bar */
+        .top-bar { 
+            background: var(--bg-card); 
+            border-radius: 12px; 
+            padding: 15px 25px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        
+        .page-title { font-size: 1.3rem; color: var(--text-primary); }
+        
+        /* User Badge */
+        .user-badge { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .avatar-mini { 
+            width: 35px; 
+            height: 35px; 
+            background: #667eea; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+        }
+        
+        /* Buttons */
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 14px; 
+        }
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-danger { background: #ef4444; color: white; }
         .btn-success { background: #22c55e; color: white; }
         .btn-secondary { background: #64748b; color: white; }
+        
+        /* Project Selector */
         .project-selector { margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        .project-selector select { padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; min-width: 250px; }
+        .project-selector select { 
+            padding: 10px 15px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            min-width: 250px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* Kanban Board */
         .kanban-board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; min-height: 500px; }
-        .kanban-col { background: #f8f9fa; border-radius: 12px; min-width: 320px; width: 320px; border: 1px solid #e2e8f0; }
-        .col-header { padding: 15px; background: white; border-radius: 12px 12px 0 0; font-weight: bold; display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; }
+        .kanban-col { 
+            background: var(--kanban-col-bg); 
+            border-radius: 12px; 
+            min-width: 320px; 
+            width: 320px; 
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        .col-header { 
+            padding: 15px; 
+            background: var(--col-header-bg); 
+            border-radius: 12px 12px 0 0; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
         .task-list { min-height: 400px; padding: 15px; }
-        .task-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; transition: 0.2s; border-left: 3px solid #667eea; }
+        .task-card { 
+            background: var(--task-card-bg); 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            box-shadow: var(--shadow); 
+            cursor: grab; 
+            transition: 0.2s; 
+            border-left: 3px solid #667eea;
+            color: var(--text-primary);
+        }
         .task-card:active { cursor: grabbing; }
-        .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .task-title { font-weight: 600; margin-bottom: 5px; }
-        .task-assignee { font-size: 11px; color: #666; margin-top: 5px; }
+        .task-assignee { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
         .task-priority { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 5px; }
         .priority-high { background: #fee2e2; color: #dc2626; }
         .priority-medium { background: #fef3c7; color: #d97706; }
         .priority-low { background: #d1fae5; color: #059669; }
+        
+        /* Card Actions */
         .card-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
         .card-actions button { background: none; border: none; cursor: pointer; padding: 5px; border-radius: 4px; transition: 0.2s; }
         .edit-task { color: #f59e0b; }
         .edit-task:hover { background: #fef3c7; }
         .delete-task { color: #ef4444; }
         .delete-task:hover { background: #fee2e2; }
+        
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; }
-        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .modal-content { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 30px; 
+            width: 90%; 
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+        }
+        .modal-content h3 { color: var(--text-primary); margin-bottom: 15px; }
+        .modal-content input, .modal-content select, .modal-content textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0 20px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
         .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; }
-        .date-badge { background: #f0f2f5; padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; }
+        
+        /* Dark Mode Toggle Switch */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 30px; position: relative; width: 54px; }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            background-color: white;
+            bottom: 3px;
+            content: "";
+            height: 24px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 24px;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #667eea; }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .slider .fa-sun, .slider .fa-moon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: white;
+        }
+        .slider .fa-sun { left: 8px; }
+        .slider .fa-moon { right: 8px; }
+        
+        /* Language Selector */
+        .lang-selector {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .lang-selector:hover { border-color: #667eea; }
+        .lang-selector option { background: var(--bg-secondary); color: var(--text-primary); }
+        
+        /* RTL Support */
+        body.rtl { direction: rtl; }
+        body.rtl .sidebar { right: 0; left: auto; }
+        body.rtl .main-content { margin-right: 260px; margin-left: 0; }
+        body.rtl .nav-link.active { border-left: none; border-right: 3px solid white; }
+        body.rtl .task-card { border-left: none; border-right: 3px solid #667eea; }
+        
+        /* Logout Button */
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1rem; padding: 8px 12px; border-radius: 8px; transition: 0.3s; }
+        .logout-btn:hover { background: rgba(231, 76, 60, 0.1); }
+        
+        /* Date Badge */
+        .date-badge { background: var(--bg-secondary); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--border-color); }
+        
+        /* Notification */
         .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
         .notification-success { background: #22c55e; }
         .notification-error { background: #ef4444; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } .kanban-board { flex-direction: column; align-items: center; } .kanban-col { width: 100%; } }
+        
+        /* Theme Notification */
+        .theme-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            animation: fadeInOut 2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) { 
+            .sidebar { width: 70px; } 
+            .sidebar span { display: none; } 
+            .main-content { margin-left: 70px; } 
+            .kanban-board { flex-direction: column; align-items: center; } 
+            .kanban-col { width: 100%; }
+            body.rtl .main-content { margin-right: 70px; margin-left: 0; }
+        }
+        
+        /* Scrollbar Dark Mode */
+        [data-theme="dark"] ::-webkit-scrollbar { width: 8px; height: 8px; }
+        [data-theme="dark"] ::-webkit-scrollbar-track { background: #1a1f2a; border-radius: 10px; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2a313c; border-radius: 10px; }
+        [data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="sidebar">
-        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="logo"><i class="fas fa-trello"></i><span id="sidebarTitle">CollabFlow</span></div>
         <div class="nav-items">
-            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
-            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span>Projets</span></a>
-            <a href="board.html" class="nav-link active"><i class="fas fa-columns"></i><span>Board Kanban</span></a>
-            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span>Tâches</span></a>
-            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span>Rôles</span></a>
-            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span>Étiquettes</span></a>
-            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span>Profil</span></a>
+            <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span id="navDashboard">Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span id="navProjects">Projets</span></a>
+            <a href="board.html" class="nav-link active"><i class="fas fa-columns"></i><span id="navBoard">Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span id="navTasks">Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
         </div>
     </div>
     <div class="main-content">
         <div class="top-bar">
-            <h1 class="page-title"><i class="fas fa-columns"></i> Tableau Kanban</h1>
-            <div class="user-badge"><div class="date-badge" id="currentDate"></div><span id="userName">Chargement...</span><div class="avatar-mini" id="userAvatar">👤</div><button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button></div>
+            <h1 class="page-title"><i class="fas fa-columns"></i> <span id="pageTitle">Tableau Kanban</span></h1>
+            <div class="user-badge">
+                <div class="date-badge" id="currentDate"></div>
+                
+                <!-- Dark Mode Toggle -->
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider">
+                            <i class="fas fa-sun"></i>
+                            <i class="fas fa-moon"></i>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- Language Selector -->
+                <select id="languageSelect" class="lang-selector">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+                
+                <span id="userName">Chargement...</span>
+                <div class="avatar-mini" id="userAvatar">👤</div>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Déconnexion</span></button>
+            </div>
         </div>
         
         <div class="project-selector">
             <select id="projectSelect">
-                <option value="">-- Sélectionner un projet --</option>
+                <option value="">-- <span id="selectProjectText">Sélectionner un projet</span> --</option>
             </select>
-            <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> Nouvelle tâche</button>
+            <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> <span id="newTaskText">Nouvelle tâche</span></button>
         </div>
         
         <div class="kanban-board" id="kanbanBoard"></div>
@@ -93,25 +395,25 @@
 <!-- Modal Ajout Tâche -->
 <div id="addTaskModal" class="modal">
     <div class="modal-content">
-        <h3><i class="fas fa-plus-circle"></i> Nouvelle tâche</h3>
+        <h3><i class="fas fa-plus-circle"></i> <span id="addTaskTitle">Nouvelle tâche</span></h3>
         <form id="addTaskForm">
-            <label>Titre *</label>
+            <label><span id="labelTitle">Titre</span> *</label>
             <input type="text" id="addTitre" required placeholder="Titre de la tâche">
-            <label>Description</label>
+            <label><span id="labelDescription">Description</span></label>
             <textarea id="addDescription" rows="3" placeholder="Description détaillée"></textarea>
-            <label>Assigné à</label>
+            <label><span id="labelAssignee">Assigné à</span></label>
             <input type="text" id="addAssignee" placeholder="Nom de la personne">
-            <label>Priorité</label>
+            <label><span id="labelPriority">Priorité</span></label>
             <select id="addPriorite">
-                <option value="low">🟢 Basse</option>
-                <option value="medium" selected>🟡 Moyenne</option>
-                <option value="high">🔴 Haute</option>
+                <option value="low"><span id="priorityLow">🟢 Basse</span></option>
+                <option value="medium" selected><span id="priorityMedium">🟡 Moyenne</span></option>
+                <option value="high"><span id="priorityHigh">🔴 Haute</span></option>
             </select>
-            <label>Date d'échéance</label>
+            <label><span id="labelDueDate">Date d'échéance</span></label>
             <input type="date" id="addEcheance">
             <div class="modal-buttons">
-                <button type="button" class="btn btn-secondary" id="closeAddModal">Annuler</button>
-                <button type="submit" class="btn btn-primary">Créer</button>
+                <button type="button" class="btn btn-secondary" id="closeAddModal"><span id="cancelText">Annuler</span></button>
+                <button type="submit" class="btn btn-primary"><span id="createText">Créer</span></button>
             </div>
         </form>
     </div>
@@ -120,38 +422,288 @@
 <!-- Modal Modification Tâche -->
 <div id="editTaskModal" class="modal">
     <div class="modal-content">
-        <h3><i class="fas fa-edit"></i> Modifier la tâche</h3>
+        <h3><i class="fas fa-edit"></i> <span id="editTaskTitle">Modifier la tâche</span></h3>
         <form id="editTaskForm">
             <input type="hidden" id="editTaskId">
-            <label>Titre *</label>
+            <label><span id="editLabelTitle">Titre</span> *</label>
             <input type="text" id="editTitre" required placeholder="Titre de la tâche">
-            <label>Description</label>
+            <label><span id="editLabelDescription">Description</span></label>
             <textarea id="editDescription" rows="3" placeholder="Description détaillée"></textarea>
-            <label>Assigné à</label>
+            <label><span id="editLabelAssignee">Assigné à</span></label>
             <input type="text" id="editAssignee" placeholder="Nom de la personne">
-            <label>Priorité</label>
+            <label><span id="editLabelPriority">Priorité</span></label>
             <select id="editPriorite">
                 <option value="low">🟢 Basse</option>
                 <option value="medium">🟡 Moyenne</option>
                 <option value="high">🔴 Haute</option>
             </select>
-            <label>Statut</label>
+            <label><span id="editLabelStatus">Statut</span></label>
             <select id="editStatus">
                 <option value="todo">📋 À faire</option>
                 <option value="in-progress">⚙️ En cours</option>
                 <option value="done">✅ Terminé</option>
             </select>
-            <label>Date d'échéance</label>
+            <label><span id="editLabelDueDate">Date d'échéance</span></label>
             <input type="date" id="editEcheance">
             <div class="modal-buttons">
-                <button type="button" class="btn btn-secondary" id="closeEditModal">Annuler</button>
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" class="btn btn-secondary" id="closeEditModal"><span id="editCancelText">Annuler</span></button>
+                <button type="submit" class="btn btn-primary"><span id="saveText">Enregistrer</span></button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    // ============================================
+    // TRADUCTIONS
+    // ============================================
+    const translations = {
+        fr: {
+            sidebarTitle: "CollabFlow",
+            navDashboard: "Tableau de bord",
+            navProjects: "Projets",
+            navBoard: "Board Kanban",
+            navTasks: "Tâches",
+            navRoles: "Rôles",
+            navLabels: "Étiquettes",
+            navProfile: "Profil",
+            pageTitle: "Tableau Kanban",
+            selectProjectText: "Sélectionner un projet",
+            newTaskText: "Nouvelle tâche",
+            addTaskTitle: "Nouvelle tâche",
+            labelTitle: "Titre",
+            labelDescription: "Description",
+            labelAssignee: "Assigné à",
+            labelPriority: "Priorité",
+            priorityLow: "🟢 Basse",
+            priorityMedium: "🟡 Moyenne",
+            priorityHigh: "🔴 Haute",
+            labelDueDate: "Date d'échéance",
+            cancelText: "Annuler",
+            createText: "Créer",
+            editTaskTitle: "Modifier la tâche",
+            editLabelTitle: "Titre",
+            editLabelDescription: "Description",
+            editLabelAssignee: "Assigné à",
+            editLabelPriority: "Priorité",
+            editLabelStatus: "Statut",
+            editLabelDueDate: "Date d'échéance",
+            editCancelText: "Annuler",
+            saveText: "Enregistrer",
+            logoutText: "Déconnexion",
+            todo: "📋 À faire",
+            inProgress: "⚙️ En cours",
+            done: "✅ Terminé",
+            noProjectSelected: "Sélectionnez un projet pour voir les tâches",
+            taskMoved: "Tâche déplacée",
+            taskCreated: "Tâche créée",
+            taskUpdated: "Tâche modifiée",
+            taskDeleted: "Tâche supprimée",
+            titleRequired: "Titre requis",
+            selectProjectFirst: "Sélectionnez d'abord un projet",
+            errorLoadingProjects: "Erreur chargement projets",
+            errorLoadingTasks: "Erreur chargement tâches",
+            errorMovingTask: "Erreur déplacement",
+            errorCreatingTask: "Erreur création",
+            errorUpdatingTask: "Erreur modification",
+            errorDeletingTask: "Erreur suppression",
+            serverError: "Erreur serveur"
+        },
+        en: {
+            sidebarTitle: "CollabFlow",
+            navDashboard: "Dashboard",
+            navProjects: "Projects",
+            navBoard: "Kanban Board",
+            navTasks: "Tasks",
+            navRoles: "Roles",
+            navLabels: "Labels",
+            navProfile: "Profile",
+            pageTitle: "Kanban Board",
+            selectProjectText: "Select a project",
+            newTaskText: "New task",
+            addTaskTitle: "New task",
+            labelTitle: "Title",
+            labelDescription: "Description",
+            labelAssignee: "Assignee",
+            labelPriority: "Priority",
+            priorityLow: "🟢 Low",
+            priorityMedium: "🟡 Medium",
+            priorityHigh: "🔴 High",
+            labelDueDate: "Due date",
+            cancelText: "Cancel",
+            createText: "Create",
+            editTaskTitle: "Edit task",
+            editLabelTitle: "Title",
+            editLabelDescription: "Description",
+            editLabelAssignee: "Assignee",
+            editLabelPriority: "Priority",
+            editLabelStatus: "Status",
+            editLabelDueDate: "Due date",
+            editCancelText: "Cancel",
+            saveText: "Save",
+            logoutText: "Logout",
+            todo: "📋 To Do",
+            inProgress: "⚙️ In Progress",
+            done: "✅ Done",
+            noProjectSelected: "Select a project to see tasks",
+            taskMoved: "Task moved",
+            taskCreated: "Task created",
+            taskUpdated: "Task updated",
+            taskDeleted: "Task deleted",
+            titleRequired: "Title required",
+            selectProjectFirst: "Select a project first",
+            errorLoadingProjects: "Error loading projects",
+            errorLoadingTasks: "Error loading tasks",
+            errorMovingTask: "Error moving task",
+            errorCreatingTask: "Error creating task",
+            errorUpdatingTask: "Error updating task",
+            errorDeletingTask: "Error deleting task",
+            serverError: "Server error"
+        },
+        ar: {
+            sidebarTitle: "كولاب فلو",
+            navDashboard: "لوحة القيادة",
+            navProjects: "المشاريع",
+            navBoard: "مجلس كانبان",
+            navTasks: "المهام",
+            navRoles: "الأدوار",
+            navLabels: "العلامات",
+            navProfile: "الملف الشخصي",
+            pageTitle: "مجلس كانبان",
+            selectProjectText: "اختر مشروعاً",
+            newTaskText: "مهمة جديدة",
+            addTaskTitle: "مهمة جديدة",
+            labelTitle: "العنوان",
+            labelDescription: "الوصف",
+            labelAssignee: "مسند إلى",
+            labelPriority: "الأولوية",
+            priorityLow: "🟢 منخفضة",
+            priorityMedium: "🟡 متوسطة",
+            priorityHigh: "🔴 عالية",
+            labelDueDate: "تاريخ الاستحقاق",
+            cancelText: "إلغاء",
+            createText: "إنشاء",
+            editTaskTitle: "تعديل المهمة",
+            editLabelTitle: "العنوان",
+            editLabelDescription: "الوصف",
+            editLabelAssignee: "مسند إلى",
+            editLabelPriority: "الأولوية",
+            editLabelStatus: "الحالة",
+            editLabelDueDate: "تاريخ الاستحقاق",
+            editCancelText: "إلغاء",
+            saveText: "حفظ",
+            logoutText: "تسجيل خروج",
+            todo: "📋 للقيام",
+            inProgress: "⚙️ قيد التنفيذ",
+            done: "✅ منتهي",
+            noProjectSelected: "اختر مشروعاً لعرض المهام",
+            taskMoved: "تم نقل المهمة",
+            taskCreated: "تم إنشاء المهمة",
+            taskUpdated: "تم تعديل المهمة",
+            taskDeleted: "تم حذف المهمة",
+            titleRequired: "العنوان مطلوب",
+            selectProjectFirst: "اختر مشروعاً أولاً",
+            errorLoadingProjects: "خطأ في تحميل المشاريع",
+            errorLoadingTasks: "خطأ في تحميل المهام",
+            errorMovingTask: "خطأ في نقل المهمة",
+            errorCreatingTask: "خطأ في إنشاء المهمة",
+            errorUpdatingTask: "خطأ في تعديل المهمة",
+            errorDeletingTask: "خطأ في حذف المهمة",
+            serverError: "خطأ في الخادم"
+        }
+    };
+    
+    let currentLang = localStorage.getItem('language') || 'fr';
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // ============================================
+    // DARK MODE FUNCTIONS
+    // ============================================
+    function initDarkMode() {
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) toggle.checked = true;
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    }
+    
+    function toggleDarkMode() {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        showThemeNotification(newTheme === 'dark' ? '🌙 Mode sombre activé' : '☀️ Mode clair activé');
+    }
+    
+    function showThemeNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.innerHTML = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 2000);
+    }
+    
+    // ============================================
+    // LANGUAGE FUNCTIONS
+    // ============================================
+    function updateTexts() {
+        const t = translations[currentLang];
+        document.getElementById('sidebarTitle').innerText = t.sidebarTitle;
+        document.getElementById('navDashboard').innerText = t.navDashboard;
+        document.getElementById('navProjects').innerText = t.navProjects;
+        document.getElementById('navBoard').innerText = t.navBoard;
+        document.getElementById('navTasks').innerText = t.navTasks;
+        document.getElementById('navRoles').innerText = t.navRoles;
+        document.getElementById('navLabels').innerText = t.navLabels;
+        document.getElementById('navProfile').innerText = t.navProfile;
+        document.getElementById('pageTitle').innerText = t.pageTitle;
+        document.getElementById('selectProjectText').innerText = t.selectProjectText;
+        document.getElementById('newTaskText').innerText = t.newTaskText;
+        document.getElementById('addTaskTitle').innerText = t.addTaskTitle;
+        document.getElementById('labelTitle').innerText = t.labelTitle;
+        document.getElementById('labelDescription').innerText = t.labelDescription;
+        document.getElementById('labelAssignee').innerText = t.labelAssignee;
+        document.getElementById('labelPriority').innerText = t.labelPriority;
+        document.getElementById('priorityLow').innerText = t.priorityLow;
+        document.getElementById('priorityMedium').innerText = t.priorityMedium;
+        document.getElementById('priorityHigh').innerText = t.priorityHigh;
+        document.getElementById('labelDueDate').innerText = t.labelDueDate;
+        document.getElementById('cancelText').innerText = t.cancelText;
+        document.getElementById('createText').innerText = t.createText;
+        document.getElementById('editTaskTitle').innerText = t.editTaskTitle;
+        document.getElementById('editLabelTitle').innerText = t.editLabelTitle;
+        document.getElementById('editLabelDescription').innerText = t.editLabelDescription;
+        document.getElementById('editLabelAssignee').innerText = t.editLabelAssignee;
+        document.getElementById('editLabelPriority').innerText = t.editLabelPriority;
+        document.getElementById('editLabelStatus').innerText = t.editLabelStatus;
+        document.getElementById('editLabelDueDate').innerText = t.editLabelDueDate;
+        document.getElementById('editCancelText').innerText = t.editCancelText;
+        document.getElementById('saveText').innerText = t.saveText;
+        document.getElementById('logoutText').innerText = t.logoutText;
+        
+        // RTL pour l'arabe
+        if (currentLang === 'ar') {
+            document.body.classList.add('rtl');
+        } else {
+            document.body.classList.remove('rtl');
+        }
+        
+        // Recharger le kanban pour mettre à jour les textes des colonnes
+        if (tasks.length > 0) renderKanban();
+    }
+    
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('language', lang);
+        document.getElementById('languageSelect').value = lang;
+        updateTexts();
+        if (currentProjectId) loadTasks();
+    }
+    
+    // ============================================
+    // DASHBOARD FUNCTIONS
+    // ============================================
     const API_URL = 'http://localhost:3002/api';
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
@@ -178,9 +730,10 @@
             if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
             projects = await res.json();
             const select = document.getElementById('projectSelect');
-            select.innerHTML = '<option value="">-- Sélectionner un projet --</option>';
+            const t = translations[currentLang];
+            select.innerHTML = `<option value="">-- ${t.selectProjectText} --</option>`;
             projects.forEach(p => { select.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; });
-        } catch (error) { showNotification('Erreur chargement projets', 'error'); }
+        } catch (error) { showNotification(translations[currentLang].errorLoadingProjects, 'error'); }
     }
     
     async function loadTasks() {
@@ -189,14 +742,15 @@
             const res = await fetch(`${API_URL}/taches?projetId=${currentProjectId}`, { headers: { 'Authorization': `Bearer ${token}` } });
             tasks = await res.json();
             renderKanban();
-        } catch (error) { showNotification('Erreur chargement tâches', 'error'); }
+        } catch (error) { showNotification(translations[currentLang].errorLoadingTasks, 'error'); }
     }
     
     function renderKanban() {
+        const t = translations[currentLang];
         const columns = {
-            todo: { title: '📋 À faire', tasks: tasks.filter(t => t.status === 'todo') },
-            'in-progress': { title: '⚙️ En cours', tasks: tasks.filter(t => t.status === 'in-progress') },
-            done: { title: '✅ Terminé', tasks: tasks.filter(t => t.status === 'done') }
+            todo: { title: t.todo, tasks: tasks.filter(t => t.status === 'todo') },
+            'in-progress': { title: t.inProgress, tasks: tasks.filter(t => t.status === 'in-progress') },
+            done: { title: t.done, tasks: tasks.filter(t => t.status === 'done') }
         };
         
         let html = '';
@@ -205,7 +759,7 @@
                 <div class="kanban-col" data-status="${status}">
                     <div class="col-header">
                         <span>${col.title}</span>
-                        <span style="background:#e2e8f0; padding:4px 12px; border-radius:20px;">${col.tasks.length}</span>
+                        <span style="background:var(--bg-secondary); padding:4px 12px; border-radius:20px;">${col.tasks.length}</span>
                     </div>
                     <div class="task-list" id="col-${status}">
                         ${col.tasks.map(t => `
@@ -213,14 +767,14 @@
                                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                     <div>
                                         <div class="task-title">${escapeHtml(t.titre)}</div>
-                                        ${t.description ? `<div style="font-size:11px; color:#666; margin-top:4px;">${escapeHtml(t.description.substring(0, 60))}${t.description.length > 60 ? '...' : ''}</div>` : ''}
+                                        ${t.description ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${escapeHtml(t.description.substring(0, 60))}${t.description.length > 60 ? '...' : ''}</div>` : ''}
                                         <div class="task-assignee"><i class="fas fa-user"></i> ${escapeHtml(t.assigne) || 'Non assigné'}</div>
                                         <span class="task-priority ${getPriorityClass(t.priorite)}">${getPriorityText(t.priorite)}</span>
-                                        ${t.echeance ? `<div style="font-size:10px; color:#666; margin-top:5px;"><i class="fas fa-calendar"></i> ${formatDate(t.echeance)}</div>` : ''}
+                                        ${t.echeance ? `<div style="font-size:10px; color:var(--text-muted); margin-top:5px;"><i class="fas fa-calendar"></i> ${formatDate(t.echeance)}</div>` : ''}
                                     </div>
                                     <div class="card-actions">
-                                        <button class="edit-task" onclick="editTask('${t._id}')" title="Modifier"><i class="fas fa-edit"></i></button>
-                                        <button class="delete-task" onclick="deleteTask('${t._id}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+                                        <button class="edit-task" onclick="editTask('${t._id}')" title="${t.editTaskTitle || 'Modifier'}"><i class="fas fa-edit"></i></button>
+                                        <button class="delete-task" onclick="deleteTask('${t._id}')" title="${t.deleteTaskTitle || 'Supprimer'}"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +785,6 @@
         }
         document.getElementById('kanbanBoard').innerHTML = html;
         
-        // Initialiser Sortable pour chaque colonne
         ['todo', 'in-progress', 'done'].forEach(status => {
             const el = document.getElementById(`col-${status}`);
             if (el && tasks.length > 0) {
@@ -258,10 +811,10 @@
                 body: JSON.stringify({ status: newStatus })
             });
             if (response.ok) {
-                showNotification('Tâche déplacée', 'success');
+                showNotification(translations[currentLang].taskMoved, 'success');
                 loadTasks();
             }
-        } catch (error) { showNotification('Erreur déplacement', 'error'); }
+        } catch (error) { showNotification(translations[currentLang].errorMovingTask, 'error'); }
     }
     
     async function createTask(event) {
@@ -275,8 +828,8 @@
             echeance: document.getElementById('addEcheance').value || null,
             projetId: currentProjectId
         };
-        if (!data.titre) { showNotification('Titre requis', 'error'); return; }
-        if (!data.projetId) { showNotification('Sélectionnez un projet', 'error'); return; }
+        if (!data.titre) { showNotification(translations[currentLang].titleRequired, 'error'); return; }
+        if (!data.projetId) { showNotification(translations[currentLang].selectProjectFirst, 'error'); return; }
         
         try {
             const response = await fetch(`${API_URL}/taches`, {
@@ -285,12 +838,12 @@
                 body: JSON.stringify(data)
             });
             if (response.ok) {
-                showNotification('Tâche créée', 'success');
+                showNotification(translations[currentLang].taskCreated, 'success');
                 closeAddModal();
                 document.getElementById('addTaskForm').reset();
                 loadTasks();
-            } else { showNotification('Erreur création', 'error'); }
-        } catch (error) { showNotification('Erreur serveur', 'error'); }
+            } else { showNotification(translations[currentLang].errorCreatingTask, 'error'); }
+        } catch (error) { showNotification(translations[currentLang].serverError, 'error'); }
     }
     
     async function editTask(id) {
@@ -317,7 +870,7 @@
             status: document.getElementById('editStatus').value,
             echeance: document.getElementById('editEcheance').value || null
         };
-        if (!data.titre) { showNotification('Titre requis', 'error'); return; }
+        if (!data.titre) { showNotification(translations[currentLang].titleRequired, 'error'); return; }
         
         try {
             const response = await fetch(`${API_URL}/taches/${id}`, {
@@ -326,11 +879,11 @@
                 body: JSON.stringify(data)
             });
             if (response.ok) {
-                showNotification('Tâche modifiée', 'success');
+                showNotification(translations[currentLang].taskUpdated, 'success');
                 closeEditModal();
                 loadTasks();
-            } else { showNotification('Erreur modification', 'error'); }
-        } catch (error) { showNotification('Erreur serveur', 'error'); }
+            } else { showNotification(translations[currentLang].errorUpdatingTask, 'error'); }
+        } catch (error) { showNotification(translations[currentLang].serverError, 'error'); }
     }
     
     async function deleteTask(id) {
@@ -341,15 +894,15 @@
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
-                showNotification('Tâche supprimée', 'success');
+                showNotification(translations[currentLang].taskDeleted, 'success');
                 loadTasks();
-            } else { showNotification('Erreur suppression', 'error'); }
-        } catch (error) { showNotification('Erreur serveur', 'error'); }
+            } else { showNotification(translations[currentLang].errorDeletingTask, 'error'); }
+        } catch (error) { showNotification(translations[currentLang].serverError, 'error'); }
     }
     
     function openAddModal() {
         if (!currentProjectId) {
-            showNotification('Sélectionnez d\'abord un projet', 'error');
+            showNotification(translations[currentLang].selectProjectFirst, 'error');
             return;
         }
         document.getElementById('addTaskModal').style.display = 'flex';
@@ -371,13 +924,21 @@
     document.getElementById('projectSelect').onchange = (e) => {
         currentProjectId = e.target.value;
         if (currentProjectId) loadTasks();
-        else document.getElementById('kanbanBoard').innerHTML = '<div style="text-align:center; padding:50px;">Sélectionnez un projet pour voir les tâches</div>';
+        else document.getElementById('kanbanBoard').innerHTML = `<div style="text-align:center; padding:50px;">${translations[currentLang].noProjectSelected}</div>`;
     };
     document.getElementById('openAddTaskModal').onclick = openAddModal;
     document.getElementById('closeAddModal').onclick = closeAddModal;
     document.getElementById('closeEditModal').onclick = closeEditModal;
     document.getElementById('addTaskForm').onsubmit = createTask;
     document.getElementById('editTaskForm').onsubmit = updateTask;
+    
+    // Initialisation Dark Mode & Language
+    initDarkMode();
+    updateTexts();
+    
+    document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+    document.getElementById('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+    
     window.editTask = editTask;
     window.deleteTask = deleteTask;
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
