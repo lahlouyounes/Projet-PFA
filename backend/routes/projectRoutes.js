@@ -10,4 +10,8 @@ router.post('/', projectController.createProject);
 router.put('/:id', projectController.updateProject);
 router.delete('/:id', projectController.deleteProject);
 
+// Gestion des membres
+router.post('/:id/membres', projectController.inviterMembre);
+router.delete('/:id/membres/:membreId', projectController.supprimerMembre);
+
 module.exports = router;

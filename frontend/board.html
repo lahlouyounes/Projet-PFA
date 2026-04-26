@@ -349,6 +349,10 @@
             <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
             <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
             <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link">
+                <i class="fas fa-users"></i><span>Vue Membres</span>
+            </a>
         </div>
     </div>
     <div class="main-content">
@@ -387,6 +391,31 @@
             </select>
             <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> <span id="newTaskText">Nouvelle tâche</span></button>
         </div>
+
+        <!-- Barre de filtres -->
+        <div id="filterBar" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; align-items:center;">
+            
+            <select id="filterAssigne" style="padding:8px 12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary);">
+                <option value="">Tous les membres</option>
+            </select>
+
+            <select id="filterLabel" style="padding:8px 12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary);">
+                <option value="">Toutes les étiquettes</option>
+            </select>
+
+            <input type="date" id="filterEcheance" 
+                style="padding:8px 12px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary);"
+                title="Afficher les tâches dont l'échéance est avant cette date">
+
+            <button class="btn btn-primary" onclick="appliquerFiltres()">
+                <i class="fas fa-search"></i> Filtrer
+            </button>
+
+            <button class="btn btn-secondary" onclick="reinitialiserFiltres()">
+                <i class="fas fa-undo"></i> Réinitialiser
+            </button>
+
+        </div>
         
         <div class="kanban-board" id="kanbanBoard"></div>
     </div>
@@ -399,10 +428,24 @@
         <form id="addTaskForm">
             <label><span id="labelTitle">Titre</span> *</label>
             <input type="text" id="addTitre" required placeholder="Titre de la tâche">
+            <label>Estimation IA</label>
+            <div style="display:flex; align-items:center; gap:10px; margin:10px 0 20px;">
+                <button type="button" id="btnEstimer" 
+                    class="btn btn-primary" 
+                    style="padding:8px 15px; font-size:13px;">
+                    <i class="fas fa-robot"></i> Estimer la durée
+                </button>
+                <span id="estimationResult" 
+                    style="font-weight:600; color:#667eea; display:none;">
+                </span>
+            </div>
+            <input type="hidden" id="addDureeEstimee" value="">
             <label><span id="labelDescription">Description</span></label>
             <textarea id="addDescription" rows="3" placeholder="Description détaillée"></textarea>
             <label><span id="labelAssignee">Assigné à</span></label>
-            <input type="text" id="addAssignee" placeholder="Nom de la personne">
+            <select id="addAssignee">
+                <option value="">-- Non assigné --</option>
+            </select>
             <label><span id="labelPriority">Priorité</span></label>
             <select id="addPriorite">
                 <option value="low"><span id="priorityLow">🟢 Basse</span></option>
@@ -411,6 +454,9 @@
             </select>
             <label><span id="labelDueDate">Date d'échéance</span></label>
             <input type="date" id="addEcheance">
+            <label>Étiquettes</label>
+            <select id="addLabels" multiple style="height: 100px;">
+            </select>
             <div class="modal-buttons">
                 <button type="button" class="btn btn-secondary" id="closeAddModal"><span id="cancelText">Annuler</span></button>
                 <button type="submit" class="btn btn-primary"><span id="createText">Créer</span></button>
@@ -429,8 +475,14 @@
             <input type="text" id="editTitre" required placeholder="Titre de la tâche">
             <label><span id="editLabelDescription">Description</span></label>
             <textarea id="editDescription" rows="3" placeholder="Description détaillée"></textarea>
+            <label>Projet *</label>
+            <select id="addProjet" required>
+                <option value="">-- Sélectionner un projet --</option>
+            </select>
             <label><span id="editLabelAssignee">Assigné à</span></label>
-            <input type="text" id="editAssignee" placeholder="Nom de la personne">
+            <select id="editAssignee">
+                <option value="">-- Non assigné --</option>
+            </select>            
             <label><span id="editLabelPriority">Priorité</span></label>
             <select id="editPriorite">
                 <option value="low">🟢 Basse</option>
@@ -445,6 +497,9 @@
             </select>
             <label><span id="editLabelDueDate">Date d'échéance</span></label>
             <input type="date" id="editEcheance">
+            <label>Étiquettes</label>
+            <select id="editLabels" multiple style="height: 100px;">
+            </select>
             <div class="modal-buttons">
                 <button type="button" class="btn btn-secondary" id="closeEditModal"><span id="editCancelText">Annuler</span></button>
                 <button type="submit" class="btn btn-primary"><span id="saveText">Enregistrer</span></button>
@@ -726,31 +781,124 @@
     
     async function loadProjects() {
         try {
-            const res = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const res = await fetch(`${API_URL}/projets`, { 
+                headers: { 'Authorization': `Bearer ${token}` } 
+            });
             if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
             projects = await res.json();
+
+            // Select du header
             const select = document.getElementById('projectSelect');
             const t = translations[currentLang];
             select.innerHTML = `<option value="">-- ${t.selectProjectText} --</option>`;
-            projects.forEach(p => { select.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; });
-        } catch (error) { showNotification(translations[currentLang].errorLoadingProjects, 'error'); }
+            projects.forEach(p => { 
+                select.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; 
+            });
+
+            // Select dans le modal ajout tâche
+            const addProjet = document.getElementById('addProjet');
+            if (addProjet) {
+                addProjet.innerHTML = `<option value="">-- Sélectionner un projet --</option>`;
+                projects.forEach(p => {
+                    addProjet.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`;
+                });
+            }
+
+        } catch (error) { 
+            showNotification(translations[currentLang].errorLoadingProjects, 'error'); 
+        }
     }
     
     async function loadTasks() {
         if (!currentProjectId) return;
         try {
-            const res = await fetch(`${API_URL}/taches?projetId=${currentProjectId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const assigne = document.getElementById('filterAssigne')?.value || '';
+            const label = document.getElementById('filterLabel')?.value || '';
+            const echeance = document.getElementById('filterEcheance')?.value || '';
+
+            let url = `${API_URL}/taches?projetId=${currentProjectId}`;
+            if (assigne) url += `&assigne=${assigne}`;
+            if (label) url += `&label=${label}`;
+            if (echeance) url += `&echeanceAvant=${echeance}`;
+
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             tasks = await res.json();
             renderKanban();
-        } catch (error) { showNotification(translations[currentLang].errorLoadingTasks, 'error'); }
+        } catch (error) {
+            showNotification(translations[currentLang].errorLoadingTasks, 'error');
+        }
     }
+    async function loadUsers() {
+    try {
+        const res = await fetch(`${API_URL}/utilisateurs`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const users = await res.json();
+        console.log('✅ Users chargés:', users.length);
+
+        // Selects du modal
+        ['addAssignee', 'editAssignee'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = `<option value="">-- Non assigné --</option>`
+                    + users.map(u => `<option value="${u._id}">${u.name}</option>`).join('');
+            }
+        });
+
+        // Select du filtre
+        const filterEl = document.getElementById('filterAssigne');
+        if (filterEl) {
+            filterEl.innerHTML = `<option value="">Tous les membres</option>`
+                + users.map(u => `<option value="${u._id}">${u.name}</option>`).join('');
+        }
+
+    } catch (e) {
+        console.error('Erreur loadUsers:', e);
+    }
+}
+
+async function loadLabels() {
+    try {
+        const res = await fetch(`${API_URL}/etiquettes`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const labels = await res.json();
+        console.log('✅ Labels chargés:', labels.length);
+
+        // Selects multiples du modal
+        ['addLabels', 'editLabels'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = labels.map(l =>
+                    `<option value="${l._id}">● ${l.nom}</option>`
+                ).join('');
+            }
+        });
+
+        // Select du filtre (option vide obligatoire)
+        const filterEl = document.getElementById('filterLabel');
+        if (filterEl) {
+            filterEl.innerHTML = `<option value="">Toutes les étiquettes</option>`
+                + labels.map(l =>
+                    `<option value="${l._id}">● ${l.nom}</option>`
+                ).join('');
+        }
+
+    } catch (e) {
+        console.error('Erreur loadLabels:', e);
+    }
+}
     
     function renderKanban() {
         const t = translations[currentLang];
         const columns = {
-            todo: { title: t.todo, tasks: tasks.filter(t => t.status === 'todo') },
-            'in-progress': { title: t.inProgress, tasks: tasks.filter(t => t.status === 'in-progress') },
-            done: { title: t.done, tasks: tasks.filter(t => t.status === 'done') }
+            todo: { title: t.todo, tasks: tasks.filter(task => task.status === 'todo') },
+            'in-progress': { title: t.inProgress, tasks: tasks.filter(task => task.status === 'in-progress') },
+            done: { title: t.done, tasks: tasks.filter(task => task.status === 'done') }
         };
         
         let html = '';
@@ -768,8 +916,7 @@
                                     <div>
                                         <div class="task-title">${escapeHtml(t.titre)}</div>
                                         ${t.description ? `<div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${escapeHtml(t.description.substring(0, 60))}${t.description.length > 60 ? '...' : ''}</div>` : ''}
-                                        <div class="task-assignee"><i class="fas fa-user"></i> ${escapeHtml(t.assigne) || 'Non assigné'}</div>
-                                        <span class="task-priority ${getPriorityClass(t.priorite)}">${getPriorityText(t.priorite)}</span>
+                                        <div class="task-assignee"><i class="fas fa-user"></i> ${t.assigne ? escapeHtml(t.assigne.name) : 'Non assigné'}</div>                                        <span class="task-priority ${getPriorityClass(t.priorite)}">${getPriorityText(t.priorite)}</span>
                                         ${t.echeance ? `<div style="font-size:10px; color:var(--text-muted); margin-top:5px;"><i class="fas fa-calendar"></i> ${formatDate(t.echeance)}</div>` : ''}
                                     </div>
                                     <div class="card-actions">
@@ -819,18 +966,26 @@
     
     async function createTask(event) {
         event.preventDefault();
+        
+        const assigneVal = document.getElementById('addAssignee').value;
+        const labelsVal = Array.from(document.getElementById('addLabels').selectedOptions)
+            .map(o => o.value)
+            .filter(v => v !== '');
+
         const data = {
             titre: document.getElementById('addTitre').value.trim(),
             description: document.getElementById('addDescription').value,
-            assigne: document.getElementById('addAssignee').value,
+            assigne: assigneVal && assigneVal !== '' ? assigneVal : null,
             priorite: document.getElementById('addPriorite').value,
             status: 'todo',
             echeance: document.getElementById('addEcheance').value || null,
-            projetId: currentProjectId
+            labels: labelsVal,
+            projetId: document.getElementById('addProjet').value || currentProjectId,
+            dureeEstimee: document.getElementById('addDureeEstimee')?.value || null        
         };
+
         if (!data.titre) { showNotification(translations[currentLang].titleRequired, 'error'); return; }
-        if (!data.projetId) { showNotification(translations[currentLang].selectProjectFirst, 'error'); return; }
-        
+        if (!data.projetId) { showNotification('Sélectionnez un projet', 'error'); return; }        
         try {
             const response = await fetch(`${API_URL}/taches`, {
                 method: 'POST',
@@ -842,8 +997,14 @@
                 closeAddModal();
                 document.getElementById('addTaskForm').reset();
                 loadTasks();
-            } else { showNotification(translations[currentLang].errorCreatingTask, 'error'); }
-        } catch (error) { showNotification(translations[currentLang].serverError, 'error'); }
+            } else {
+                const err = await response.json();
+                console.error('Erreur:', err);
+                showNotification(translations[currentLang].errorCreatingTask, 'error');
+            }
+        } catch (error) {
+            showNotification(translations[currentLang].serverError, 'error');
+        }
     }
     
     async function editTask(id) {
@@ -852,8 +1013,7 @@
         document.getElementById('editTaskId').value = task._id;
         document.getElementById('editTitre').value = task.titre;
         document.getElementById('editDescription').value = task.description || '';
-        document.getElementById('editAssignee').value = task.assigne || '';
-        document.getElementById('editPriorite').value = task.priorite || 'medium';
+        document.getElementById('editAssignee').value = task.assigne ? task.assigne._id : '';        document.getElementById('editPriorite').value = task.priorite || 'medium';
         document.getElementById('editStatus').value = task.status || 'todo';
         document.getElementById('editEcheance').value = task.echeance ? task.echeance.split('T')[0] : '';
         document.getElementById('editTaskModal').style.display = 'flex';
@@ -862,14 +1022,22 @@
     async function updateTask(event) {
         event.preventDefault();
         const id = document.getElementById('editTaskId').value;
+
+        const assigneVal = document.getElementById('editAssignee').value;
+        const labelsVal = Array.from(document.getElementById('editLabels').selectedOptions)
+            .map(o => o.value)
+            .filter(v => v !== '');
+
         const data = {
             titre: document.getElementById('editTitre').value.trim(),
             description: document.getElementById('editDescription').value,
-            assigne: document.getElementById('editAssignee').value,
+            assigne: assigneVal && assigneVal !== '' ? assigneVal : null,
             priorite: document.getElementById('editPriorite').value,
             status: document.getElementById('editStatus').value,
-            echeance: document.getElementById('editEcheance').value || null
+            echeance: document.getElementById('editEcheance').value || null,
+            labels: labelsVal
         };
+
         if (!data.titre) { showNotification(translations[currentLang].titleRequired, 'error'); return; }
         
         try {
@@ -882,8 +1050,14 @@
                 showNotification(translations[currentLang].taskUpdated, 'success');
                 closeEditModal();
                 loadTasks();
-            } else { showNotification(translations[currentLang].errorUpdatingTask, 'error'); }
-        } catch (error) { showNotification(translations[currentLang].serverError, 'error'); }
+            } else {
+                const err = await response.json();
+                console.error('Erreur:', err);
+                showNotification(translations[currentLang].errorUpdatingTask, 'error');
+            }
+        } catch (error) {
+            showNotification(translations[currentLang].serverError, 'error');
+        }
     }
     
     async function deleteTask(id) {
@@ -901,9 +1075,10 @@
     }
     
     function openAddModal() {
-        if (!currentProjectId) {
-            showNotification(translations[currentLang].selectProjectFirst, 'error');
-            return;
+        // Pré-sélectionner le projet courant si déjà sélectionné
+        const addProjet = document.getElementById('addProjet');
+        if (addProjet && currentProjectId) {
+            addProjet.value = currentProjectId;
         }
         document.getElementById('addTaskModal').style.display = 'flex';
     }
@@ -916,7 +1091,67 @@
             if (res.ok) { const user = await res.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.nom?.charAt(0) || '👤'; }
         } catch (error) {}
     }
-    
+
+    function appliquerFiltres() {
+        loadTasks();
+    }
+
+    function reinitialiserFiltres() {
+        document.getElementById('filterAssigne').value = '';
+        document.getElementById('filterLabel').value = '';
+        document.getElementById('filterEcheance').value = '';
+        loadTasks();
+    }
+    // ============================================
+// OPTION IA — ESTIMATION DE DURÉE
+// ============================================
+    document.getElementById('btnEstimer').onclick = async () => {
+        const titre = document.getElementById('addTitre').value.trim();
+        const projetId = document.getElementById('addProjet')?.value || currentProjectId;
+
+        if (!titre) {
+            showNotification('Entrez d\'abord un titre', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnEstimer');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Estimation...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_URL}/taches/estimer`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    titre,
+                    description: document.getElementById('addDescription').value,
+                    priorite: document.getElementById('addPriorite').value,
+                    projetId
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                document.getElementById('estimationResult').style.display = 'inline';
+                document.getElementById('estimationResult').innerHTML = 
+                    `⏱️ Durée estimée : <strong>${data.dureeEstimee} heure(s)</strong>`;
+                document.getElementById('addDureeEstimee').value = data.dureeEstimee;
+                showNotification(`IA : ${data.dureeEstimee} heure(s) estimées`, 'success');
+            } else {
+                showNotification('Erreur estimation IA', 'error');
+            }
+        } catch (e) {
+            showNotification('Erreur connexion', 'error');
+        } finally {
+            btn.innerHTML = '<i class="fas fa-robot"></i> Estimer la durée';
+            btn.disabled = false;
+        }
+    };
+
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     function logout() { localStorage.clear(); window.location.href = 'login.html'; }
     
@@ -945,6 +1180,8 @@
     
     loadUserInfo();
     loadProjects();
+    loadLabels();
+    loadUsers();
 </script>
 </body>
 </html>

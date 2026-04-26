@@ -310,6 +310,26 @@
         [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
             background: #3b82f6;
         }
+
+        .date-badge { 
+            background: var(--bg-secondary); 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            font-size: 0.85rem; 
+            border: 1px solid var(--border-color); 
+        }
+
+        .avatar-mini { 
+            width: 35px; 
+            height: 35px; 
+            background: #667eea; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
@@ -324,6 +344,10 @@
             <div class="nav-link" onclick="location.href='roles.html'"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></div>
             <div class="nav-link" onclick="location.href='etiquette.html'"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></div>
             <div class="nav-link" onclick="location.href='profil.html'"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></div>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link">
+                <i class="fas fa-users"></i><span>Vue Membres</span>
+            </a>
         </div>
     </div>
     <div class="main-content">

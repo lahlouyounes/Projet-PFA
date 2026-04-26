@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Membres | CollabFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f5f7; color: #1a1a2e; }
+        .app { display: flex; min-height: 100vh; }
+
+        .sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: white; text-decoration: none; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; }
+        .top-bar { background: white; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+
+        .project-selector { margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
+        .project-selector select { padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 8px; min-width: 250px; background: white; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+        /* Grille membres */
+        .membres-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+        .membre-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .membre-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #e2e8f0; background: #f8f9fa; }
+        .membre-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold; flex-shrink: 0; }
+        .membre-info { flex: 1; }
+        .membre-name { font-size: 16px; font-weight: 600; }
+        .membre-stats { font-size: 13px; color: #64748b; margin-top: 3px; }
+
+        /* Compteurs par statut */
+        .membre-counters { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid #e2e8f0; }
+        .counter-badge { flex: 1; text-align: center; padding: 6px; border-radius: 8px; font-size: 12px; }
+        .counter-todo { background: #f1f5f9; color: #475569; }
+        .counter-progress { background: #dbeafe; color: #2563eb; }
+        .counter-done { background: #dcfce7; color: #16a34a; }
+        .counter-n { font-size: 18px; font-weight: 600; display: block; }
+
+        /* Liste des tâches */
+        .taches-list { padding: 15px; max-height: 300px; overflow-y: auto; }
+        .tache-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; margin-bottom: 8px; background: #f8f9fa; border-left: 3px solid #667eea; }
+        .tache-item.status-done { border-left-color: #22c55e; opacity: 0.7; }
+        .tache-item.status-in-progress { border-left-color: #3b82f6; }
+        .tache-item.status-todo { border-left-color: #94a3b8; }
+        .tache-titre { font-size: 13px; font-weight: 500; flex: 1; }
+        .tache-meta { font-size: 11px; color: #94a3b8; }
+        .priority-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .priority-high { background: #fee2e2; color: #dc2626; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #dcfce7; color: #16a34a; }
+
+        .empty-state { text-align: center; padding: 50px; color: #64748b; }
+        .empty-membre { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; }
+        .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1rem; padding: 8px 12px; border-radius: 8px; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 70px; }
+            .membres-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-trello"></i><span>CollabFlow</span></div>
+        <div class="nav-items">
+           <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i><span id="navDashboard">Dashboard</span></a>
+            <a href="projets.html" class="nav-link"><i class="fas fa-folder-open"></i><span id="navProjects">Projets</span></a>
+            <a href="board.html" class="nav-link active"><i class="fas fa-columns"></i><span id="navBoard">Board Kanban</span></a>
+            <a href="taches.html" class="nav-link"><i class="fas fa-tasks"></i><span id="navTasks">Tâches</span></a>
+            <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
+            <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
+            <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link">
+                <i class="fas fa-users"></i><span>Vue Membres</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 style="font-size:1.3rem;"><i class="fas fa-users"></i> Vue Membres</h1>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </div>
+
+        <div class="project-selector">
+            <select id="projectSelect">
+                <option value="">-- Sélectionner un projet --</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadMembres()">
+                <i class="fas fa-search"></i> Voir les membres
+            </button>
+        </div>
+
+        <div id="membresContainer">
+            <div class="empty-state">
+                <i class="fas fa-users" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
+                <p>Sélectionnez un projet pour voir les membres</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3002/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    async function loadProjects() {
+        try {
+            const res = await fetch(`${API_URL}/projets`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const projects = await res.json();
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">-- Sélectionner un projet --</option>';
+            projects.forEach(p => {
+                select.innerHTML += `<option value="${p._id}">${p.nom}</option>`;
+            });
+        } catch (e) {}
+    }
+
+    async function loadMembres() {
+        const projetId = document.getElementById('projectSelect').value;
+        if (!projetId) return;
+
+        const container = document.getElementById('membresContainer');
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+
+        try {
+            // Charger le projet (pour avoir le chef + membres)
+            const [projetRes, tachesRes] = await Promise.all([
+                fetch(`${API_URL}/projets/${projetId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                }),
+                fetch(`${API_URL}/taches?projetId=${projetId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+            ]);
+
+            const projet = await projetRes.json();
+            const taches = await tachesRes.json();
+
+            // Construire la liste des membres
+            // Chef de projet + membres invités
+            const membresMap = {};
+
+            // Ajouter le chef
+            if (projet.createdBy) {
+                const chef = projet.createdBy;
+                const chefId = chef._id || chef;
+                membresMap[chefId] = {
+                    id: chefId,
+                    name: chef.name || 'Chef de projet',
+                    avatar: chef.avatar || (chef.name?.charAt(0) || 'C'),
+                    role: 'Chef de projet',
+                    taches: []
+                };
+            }
+
+            // Ajouter les membres invités
+            if (projet.membres && projet.membres.length > 0) {
+                projet.membres.forEach(m => {
+                    const mId = m._id || m;
+                    if (!membresMap[mId]) {
+                        membresMap[mId] = {
+                            id: mId,
+                            name: m.name || 'Membre',
+                            avatar: m.avatar || (m.name?.charAt(0) || 'M'),
+                            role: 'Membre',
+                            taches: []
+                        };
+                    }
+                });
+            }
+
+            // Associer les tâches aux membres
+            taches.forEach(t => {
+                if (t.assigne) {
+                    const assigneId = t.assigne._id || t.assigne;
+                    if (membresMap[assigneId]) {
+                        membresMap[assigneId].taches.push(t);
+                    } else {
+                        // Membre assigné mais pas dans le projet
+                        membresMap[assigneId] = {
+                            id: assigneId,
+                            name: t.assigne.name || 'Inconnu',
+                            avatar: t.assigne.avatar || (t.assigne.name?.charAt(0) || '?'),
+                            role: 'Membre',
+                            taches: [t]
+                        };
+                    }
+                }
+            });
+
+            const membres = Object.values(membresMap);
+
+            if (!membres.length) {
+                container.innerHTML = '<div class="empty-state"><p>Aucun membre dans ce projet</p></div>';
+                return;
+            }
+
+            container.innerHTML = `<div class="membres-grid">${membres.map(m => renderMembreCard(m)).join('')}</div>`;
+
+        } catch (e) {
+            container.innerHTML = '<div class="empty-state">Erreur de chargement</div>';
+        }
+    }
+
+    function renderMembreCard(membre) {
+        const todo = membre.taches.filter(t => t.status === 'todo').length;
+        const inProgress = membre.taches.filter(t => t.status === 'in-progress').length;
+        const done = membre.taches.filter(t => t.status === 'done').length;
+        const total = membre.taches.length;
+
+        const tachesHtml = membre.taches.length === 0
+            ? '<div class="empty-membre"><i class="fas fa-inbox"></i> Aucune tâche assignée</div>'
+            : membre.taches.map(t => `
+                <div class="tache-item status-${t.status}">
+                    <div style="flex:1;">
+                        <div class="tache-titre">${escapeHtml(t.titre)}</div>
+                        <div class="tache-meta">
+                            ${t.echeance ? `<i class="fas fa-calendar"></i> ${new Date(t.echeance).toLocaleDateString('fr-FR')}` : ''}
+                        </div>
+                    </div>
+                    <span class="priority-badge priority-${t.priorite}">${
+                        { high: 'Haute', medium: 'Moyenne', low: 'Basse' }[t.priorite] || ''
+                    }</span>
+                    <span style="font-size:16px;">${
+                        { todo: '📋', 'in-progress': '⚙️', done: '✅' }[t.status] || ''
+                    }</span>
+                </div>
+            `).join('');
+
+        return `
+            <div class="membre-card">
+                <div class="membre-header">
+                    <div class="membre-avatar">${escapeHtml(membre.avatar || membre.name?.charAt(0) || '?')}</div>
+                    <div class="membre-info">
+                        <div class="membre-name">${escapeHtml(membre.name)}</div>
+                        <div class="membre-stats">${membre.role} · ${total} tâche${total > 1 ? 's' : ''}</div>
+                    </div>
+                </div>
+                <div class="membre-counters">
+                    <div class="counter-badge counter-todo">
+                        <span class="counter-n">${todo}</span>À faire
+                    </div>
+                    <div class="counter-badge counter-progress">
+                        <span class="counter-n">${inProgress}</span>En cours
+                    </div>
+                    <div class="counter-badge counter-done">
+                        <span class="counter-n">${done}</span>Terminées
+                    </div>
+                </div>
+                <div class="taches-list">${tachesHtml}</div>
+            </div>
+        `;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+    loadProjects();
+</script>
+</body>
+</html>

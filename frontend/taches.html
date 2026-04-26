@@ -6,9 +6,6 @@
     <title>Tâches | CollabFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ============================================
-           VARIABLES LIGHT MODE (DÉFAUT)
-        ============================================ */
         :root {
             --bg-primary: #f4f5f7;
             --bg-secondary: #ffffff;
@@ -27,9 +24,6 @@
             --topbar-bg: #ffffff;
         }
 
-        /* ============================================
-           DARK MODE VARIABLES
-        ============================================ */
         [data-theme="dark"] {
             --bg-primary: #0a0c10;
             --bg-secondary: #11151c;
@@ -49,117 +43,28 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--bg-primary); 
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease; }
         .app { display: flex; min-height: 100vh; }
-        
-        .sidebar { 
-            width: 260px; 
-            background: var(--sidebar-bg); 
-            color: var(--sidebar-text); 
-            position: fixed; 
-            height: 100vh; 
-            overflow-y: auto;
-            transition: background 0.3s ease;
-        }
-        
-        .logo { 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            padding: 25px 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .nav-link { 
-            padding: 12px 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            color: var(--sidebar-text); 
-            text-decoration: none; 
-            transition: 0.3s; 
-        }
+        .sidebar { width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text); position: fixed; height: 100vh; overflow-y: auto; transition: background 0.3s ease; }
+        .logo { font-size: 1.5rem; font-weight: bold; padding: 25px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .nav-link { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: var(--sidebar-text); text-decoration: none; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.2); border-left: 3px solid white; }
-        
         .main-content { flex: 1; margin-left: 260px; padding: 20px; }
-        
-        .top-bar { 
-            background: var(--topbar-bg); 
-            border-radius: 12px; 
-            padding: 15px 25px; 
-            margin-bottom: 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            gap: 15px;
-            border: 1px solid var(--border-color);
-            transition: background 0.3s ease;
-        }
-        
+        .top-bar { background: var(--topbar-bg); border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border: 1px solid var(--border-color); transition: background 0.3s ease; }
         .page-title { font-size: 1.3rem; color: var(--text-primary); }
-        
         .user-badge { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .avatar-mini { 
-            width: 35px; 
-            height: 35px; 
-            background: #667eea; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: bold; 
-        }
-        
-        .btn { 
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 8px; 
-            font-size: 14px; 
-        }
+        .avatar-mini { width: 35px; height: 35px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-danger { background: #ef4444; color: white; }
         .btn-success { background: #22c55e; color: white; }
         .btn-secondary { background: #64748b; color: white; }
-        
-        .card { 
-            background: var(--bg-card); 
-            border-radius: 12px; 
-            padding: 20px; 
-            border: 1px solid var(--border-color);
-            transition: background 0.3s ease;
-        }
-        
+        .card { background: var(--bg-card); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); transition: background 0.3s ease; }
         .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { 
-            padding: 15px; 
-            text-align: left; 
-            border-bottom: 1px solid var(--border-color); 
-            color: var(--text-secondary);
-        }
-        .data-table th { 
-            background: var(--table-header-bg); 
-            color: var(--text-primary); 
-            font-weight: 600; 
-        }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+        .data-table th { background: var(--table-header-bg); color: var(--text-primary); font-weight: 600; }
         .data-table tr:hover td { background: var(--bg-hover); }
-        
         .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
         .status-todo { background: #fef3c7; color: #d97706; }
         .status-progress { background: #dbeafe; color: #2563eb; }
@@ -167,88 +72,27 @@
         .priority-high { background: #fee2e2; color: #dc2626; }
         .priority-medium { background: #fef3c7; color: #d97706; }
         .priority-low { background: #d1fae5; color: #059669; }
-        
         .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-        .filter-bar select, .filter-bar input { 
-            padding: 8px 15px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px;
-            background: var(--filter-bg);
-            color: var(--text-primary);
-        }
-        
+        .filter-bar select, .filter-bar input { padding: 8px 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--filter-bg); color: var(--text-primary); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { 
-            background: var(--bg-card); 
-            border-radius: 16px; 
-            padding: 30px; 
-            width: 90%; 
-            max-width: 550px;
-            border: 1px solid var(--border-color);
-        }
+        .modal-content { background: var(--bg-card); border-radius: 16px; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--border-color); }
         .modal-content h3 { color: var(--text-primary); margin-bottom: 15px; }
-        .modal-content input, .modal-content select, .modal-content textarea { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0 20px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-        }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-primary); }
         .modal-content textarea { resize: vertical; min-height: 80px; }
         .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-        
         .theme-switch-wrapper { display: flex; align-items: center; }
         .theme-switch { display: inline-block; height: 30px; position: relative; width: 54px; }
         .theme-switch input { display: none; }
-        .slider {
-            background-color: #ccc;
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            background-color: white;
-            bottom: 3px;
-            content: "";
-            height: 24px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 24px;
-            border-radius: 50%;
-        }
+        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 34px; }
+        .slider:before { background-color: white; bottom: 3px; content: ""; height: 24px; left: 4px; position: absolute; transition: .4s; width: 24px; border-radius: 50%; }
         input:checked + .slider { background-color: #667eea; }
         input:checked + .slider:before { transform: translateX(24px); }
-        .slider .fa-sun, .slider .fa-moon {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 12px;
-            color: white;
-        }
+        .slider .fa-sun, .slider .fa-moon { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px; color: white; }
         .slider .fa-sun { left: 8px; }
         .slider .fa-moon { right: 8px; }
-        
-        .lang-selector {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 6px 12px;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
+        .lang-selector { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 12px; color: var(--text-primary); cursor: pointer; font-size: 0.85rem; transition: all 0.3s; }
         .lang-selector:hover { border-color: #667eea; }
         .lang-selector option { background: var(--bg-secondary); color: var(--text-primary); }
-        
         body.rtl { direction: rtl; }
         body.rtl .sidebar { right: 0; left: auto; }
         body.rtl .main-content { margin-right: 260px; margin-left: 0; }
@@ -256,44 +100,14 @@
         body.rtl .data-table th, body.rtl .data-table td { text-align: right; }
         body.rtl .filter-bar { flex-direction: row-reverse; }
         body.rtl .modal-buttons { flex-direction: row-reverse; }
-        
         .logout-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1rem; padding: 8px 12px; border-radius: 8px; transition: 0.3s; }
         .logout-btn:hover { background: rgba(231, 76, 60, 0.1); }
-        
         .date-badge { background: var(--bg-secondary); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; border: 1px solid var(--border-color); }
-        
         .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 10px; color: white; z-index: 2000; animation: slideIn 0.3s ease-out; }
         .notification-success { background: #22c55e; }
         .notification-error { background: #ef4444; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .theme-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 40px;
-            z-index: 9999;
-            animation: fadeInOut 2s ease;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(20px); }
-            15% { opacity: 1; transform: translateY(0); }
-            85% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(20px); }
-        }
-        
-        @media (max-width: 768px) { 
-            .sidebar { width: 70px; } 
-            .sidebar span { display: none; } 
-            .main-content { margin-left: 70px; } 
-            body.rtl .main-content { margin-right: 70px; margin-left: 0; }
-        }
-        
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } body.rtl .main-content { margin-right: 70px; margin-left: 0; } }
         [data-theme="dark"] ::-webkit-scrollbar { width: 8px; height: 8px; }
         [data-theme="dark"] ::-webkit-scrollbar-track { background: #1a1f2a; border-radius: 10px; }
         [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2a313c; border-radius: 10px; }
@@ -312,6 +126,8 @@
             <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
             <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
             <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link"><i class="fas fa-users"></i><span>Vue Membres</span></a>
         </div>
     </div>
     <div class="main-content">
@@ -322,10 +138,7 @@
                 <div class="theme-switch-wrapper">
                     <label class="theme-switch">
                         <input type="checkbox" id="darkModeToggle">
-                        <span class="slider">
-                            <i class="fas fa-sun"></i>
-                            <i class="fas fa-moon"></i>
-                        </span>
+                        <span class="slider"><i class="fas fa-sun"></i><i class="fas fa-moon"></i></span>
                     </label>
                 </div>
                 <select id="languageSelect" class="lang-selector">
@@ -338,7 +151,7 @@
                 <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span id="logoutText">Déconnexion</span></button>
             </div>
         </div>
-        
+
         <div class="filter-bar">
             <select id="filterProjet"><option value="" id="allProjectsOption">Tous les projets</option></select>
             <select id="filterStatut">
@@ -357,15 +170,23 @@
             <button class="btn btn-primary" onclick="applyFilters()"><i class="fas fa-search"></i> <span id="filterBtnText">Filtrer</span></button>
             <button class="btn btn-secondary" onclick="resetFilters()"><i class="fas fa-undo"></i> <span id="resetBtnText">Réinitialiser</span></button>
         </div>
-        
+
         <div style="margin-bottom:20px; text-align:right;">
             <button class="btn btn-primary" id="openAddTaskModal"><i class="fas fa-plus"></i> <span id="newTaskBtnText">Nouvelle tâche</span></button>
         </div>
-        
+
         <div class="card">
             <table class="data-table">
                 <thead>
-                    <tr><th id="thTitle">Titre</th><th id="thProject">Projet</th><th id="thAssignee">Assigné à</th><th id="thPriority">Priorité</th><th id="thStatus">Statut</th><th id="thDueDate">Échéance</th><th id="thActions">Actions</th></tr>
+                    <tr>
+                        <th id="thTitle">Titre</th>
+                        <th id="thProject">Projet</th>
+                        <th id="thAssignee">Assigné à</th>
+                        <th id="thPriority">Priorité</th>
+                        <th id="thStatus">Statut</th>
+                        <th id="thDueDate">Échéance</th>
+                        <th id="thActions">Actions</th>
+                    </tr>
                 </thead>
                 <tbody id="tasksList"><tr><td colspan="7" style="text-align:center;" id="loadingTasksText">Chargement...</td></tr></tbody>
             </table>
@@ -373,9 +194,91 @@
     </div>
 </div>
 
-<div id="addTaskModal" class="modal"><div class="modal-content"><h3 id="addModalTitle">Nouvelle tâche</h3><form id="addTaskForm"><label id="addTitleLabel">Titre *</label><input type="text" id="addTitre" required placeholder="Titre de la tâche"><label id="addDescLabel">Description</label><textarea id="addDescription" placeholder="Description détaillée"></textarea><label id="addProjectLabel">Projet</label><select id="addProjetId" required></select><label id="addAssigneeLabel">Assigné à</label><input type="text" id="AddAssignee" placeholder="Nom de la personne assignée"><label id="addPriorityLabel">Priorité</label><select id="addPriorite"><option value="low">🟢 Basse</option><option value="medium" selected>🟡 Moyenne</option><option value="high">🔴 Haute</option></select><label id="addDueDateLabel">Date d'échéance</label><input type="date" id="addEcheance"><div class="modal-buttons"><button type="button" class="btn btn-secondary" id="closeAddModal"><span id="cancelAddText">Annuler</span></button><button type="submit" class="btn btn-primary"><span id="createTaskText">Créer la tâche</span></button></div></form></div></div>
+<!-- Modal Création -->
+<div id="addTaskModal" class="modal">
+    <div class="modal-content">
+        <h3 id="addModalTitle">Nouvelle tâche</h3>
+        <form id="addTaskForm">
+            <label id="addTitleLabel">Titre *</label>
+            <input type="text" id="addTitre" required placeholder="Titre de la tâche">
+            <label>Estimation IA</label>
+            <div style="display:flex; align-items:center; gap:10px; margin:10px 0 20px;">
+                <button type="button" id="btnEstimer" 
+                    class="btn btn-primary" 
+                    style="padding:8px 15px; font-size:13px;">
+                    <i class="fas fa-robot"></i> Estimer la durée
+                </button>
+                <span id="estimationResult" 
+                    style="font-weight:600; color:#667eea; display:none;">
+                </span>
+            </div>
+            <input type="hidden" id="addDureeEstimee" value="">
+            <label id="addDescLabel">Description</label>
+            <textarea id="addDescription" placeholder="Description détaillée"></textarea>
+            <label id="addProjectLabel">Projet</label>
+            <select id="addProjetId" required></select>
+            <label id="addAssigneeLabel">Assigné à</label>
+            <select id="addAssignee">
+                <option value="">-- Non assigné --</option>
+            </select>
+            <label id="addPriorityLabel">Priorité</label>
+            <select id="addPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium" selected>🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Étiquettes</label>
+            <select id="addLabels" multiple style="height:100px; margin:10px 0 20px;">
+            </select>
+            <label id="addDueDateLabel">Date d'échéance</label>
+            <input type="date" id="addEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeAddModal"><span id="cancelAddText">Annuler</span></button>
+                <button type="submit" class="btn btn-primary"><span id="createTaskText">Créer la tâche</span></button>
+            </div>
+        </form>
+    </div>
+</div>
 
-<div id="editTaskModal" class="modal"><div class="modal-content"><h3 id="editModalTitle">Modifier la tâche</h3><form id="editTaskForm"><input type="hidden" id="editTaskId"><label id="editTitleLabel">Titre *</label><input type="text" id="editTitre" required placeholder="Titre de la tâche"><label id="editDescLabel">Description</label><textarea id="editDescription" placeholder="Description détaillée"></textarea><label id="editProjectLabel">Projet</label><select id="editProjetId" required></select><label id="editAssigneeLabel">Assigné à</label><input type="text" id="editAssignee" placeholder="Nom de la personne assignée"><label id="editPriorityLabel">Priorité</label><select id="editPriorite"><option value="low">🟢 Basse</option><option value="medium">🟡 Moyenne</option><option value="high">🔴 Haute</option></select><label id="editStatusLabel">Statut</label><select id="editStatut"><option value="todo">📋 À faire</option><option value="in-progress">⚙️ En cours</option><option value="done">✅ Terminé</option></select><label id="editDueDateLabel">Date d'échéance</label><input type="date" id="editEcheance"><div class="modal-buttons"><button type="button" class="btn btn-secondary" id="closeEditModal"><span id="cancelEditText">Annuler</span></button><button type="submit" class="btn btn-primary"><span id="saveTaskText">Enregistrer</span></button></div></form></div></div>
+<!-- Modal Modification -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <h3 id="editModalTitle">Modifier la tâche</h3>
+        <form id="editTaskForm">
+            <input type="hidden" id="editTaskId">
+            <label id="editTitleLabel">Titre *</label>
+            <input type="text" id="editTitre" required placeholder="Titre de la tâche">
+            <label id="editDescLabel">Description</label>
+            <textarea id="editDescription" placeholder="Description détaillée"></textarea>
+            <label id="editProjectLabel">Projet</label>
+            <select id="editProjetId" required></select>
+            <label id="editAssigneeLabel">Assigné à</label>
+            <select id="editAssignee">
+                <option value="">-- Non assigné --</option>
+            </select>
+            <label id="editPriorityLabel">Priorité</label>
+            <select id="editPriorite">
+                <option value="low">🟢 Basse</option>
+                <option value="medium">🟡 Moyenne</option>
+                <option value="high">🔴 Haute</option>
+            </select>
+            <label>Étiquettes</label>
+            <select id="editLabels" multiple style="height:100px; margin:10px 0 20px;"></select>            </select>
+            <label id="editStatusLabel">Statut</label>
+            <select id="editStatut">
+                <option value="todo">📋 À faire</option>
+                <option value="in-progress">⚙️ En cours</option>
+                <option value="done">✅ Terminé</option>
+            </select>
+            <label id="editDueDateLabel">Date d'échéance</label>
+            <input type="date" id="editEcheance">
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" id="closeEditModal"><span id="cancelEditText">Annuler</span></button>
+                <button type="submit" class="btn btn-primary"><span id="saveTaskText">Enregistrer</span></button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
     const translations = {
@@ -444,16 +347,16 @@
             confirmDelete: "هل أنت متأكد من حذف هذه المهمة؟", noTasks: "لا توجد مهام"
         }
     };
-    
+
     let currentLang = localStorage.getItem('language') || 'fr';
     let currentTheme = localStorage.getItem('theme') || 'light';
     const API_URL = 'http://localhost:3002/api';
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
-    
+
     let allTasks = [];
     let projects = [];
-    
+
     function showNotification(message, type = 'success') {
         const n = document.createElement('div');
         n.className = `notification notification-${type}`;
@@ -461,74 +364,29 @@
         document.body.appendChild(n);
         setTimeout(() => n.remove(), 3000);
     }
-    
+
     function initDarkMode() {
         if (currentTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
             document.getElementById('darkModeToggle').checked = true;
         }
     }
-    
+
     function toggleDarkMode() {
         const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
     }
-    
+
     function updateTexts() {
         const t = translations[currentLang];
-        document.getElementById('sidebarTitle').innerText = t.sidebarTitle;
-        document.getElementById('navDashboard').innerText = t.navDashboard;
-        document.getElementById('navProjects').innerText = t.navProjects;
-        document.getElementById('navBoard').innerText = t.navBoard;
-        document.getElementById('navTasks').innerText = t.navTasks;
-        document.getElementById('navRoles').innerText = t.navRoles;
-        document.getElementById('navLabels').innerText = t.navLabels;
-        document.getElementById('navProfile').innerText = t.navProfile;
-        document.getElementById('pageTitle').innerText = t.pageTitle;
-        document.getElementById('logoutText').innerText = t.logoutText;
-        document.getElementById('newTaskBtnText').innerText = t.newTaskBtnText;
-        document.getElementById('thTitle').innerText = t.thTitle;
-        document.getElementById('thProject').innerText = t.thProject;
-        document.getElementById('thAssignee').innerText = t.thAssignee;
-        document.getElementById('thPriority').innerText = t.thPriority;
-        document.getElementById('thStatus').innerText = t.thStatus;
-        document.getElementById('thDueDate').innerText = t.thDueDate;
-        document.getElementById('thActions').innerText = t.thActions;
-        document.getElementById('loadingTasksText').innerText = t.loadingTasksText;
-        document.getElementById('allProjectsOption').innerText = t.allProjectsOption;
-        document.getElementById('allStatusOption').innerText = t.allStatusOption;
-        document.getElementById('allPriorityOption').innerText = t.allPriorityOption;
-        document.getElementById('todoStatusOption').innerText = t.todoStatusOption;
-        document.getElementById('progressStatusOption').innerText = t.progressStatusOption;
-        document.getElementById('doneStatusOption').innerText = t.doneStatusOption;
-        document.getElementById('highPriorityOption').innerText = t.highPriorityOption;
-        document.getElementById('mediumPriorityOption').innerText = t.mediumPriorityOption;
-        document.getElementById('lowPriorityOption').innerText = t.lowPriorityOption;
-        document.getElementById('filterBtnText').innerText = t.filterBtnText;
-        document.getElementById('resetBtnText').innerText = t.resetBtnText;
-        document.getElementById('addModalTitle').innerText = t.addModalTitle;
-        document.getElementById('addTitleLabel').innerText = t.addTitleLabel;
-        document.getElementById('addDescLabel').innerText = t.addDescLabel;
-        document.getElementById('addProjectLabel').innerText = t.addProjectLabel;
-        document.getElementById('addAssigneeLabel').innerText = t.addAssigneeLabel;
-        document.getElementById('addPriorityLabel').innerText = t.addPriorityLabel;
-        document.getElementById('addDueDateLabel').innerText = t.addDueDateLabel;
-        document.getElementById('cancelAddText').innerText = t.cancelAddText;
-        document.getElementById('createTaskText').innerText = t.createTaskText;
-        document.getElementById('editModalTitle').innerText = t.editModalTitle;
-        document.getElementById('editTitleLabel').innerText = t.editTitleLabel;
-        document.getElementById('editDescLabel').innerText = t.editDescLabel;
-        document.getElementById('editProjectLabel').innerText = t.editProjectLabel;
-        document.getElementById('editAssigneeLabel').innerText = t.editAssigneeLabel;
-        document.getElementById('editPriorityLabel').innerText = t.editPriorityLabel;
-        document.getElementById('editStatusLabel').innerText = t.editStatusLabel;
-        document.getElementById('editDueDateLabel').innerText = t.editDueDateLabel;
-        document.getElementById('cancelEditText').innerText = t.cancelEditText;
-        document.getElementById('saveTaskText').innerText = t.saveTaskText;
+        Object.keys(t).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = t[id];
+        });
         document.body.classList.toggle('rtl', currentLang === 'ar');
     }
-    
+
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('language', lang);
@@ -536,13 +394,13 @@
         updateTexts();
         loadTasks();
     }
-    
+
     function getPriorityText(p) { const t = translations[currentLang]; return { high: t.highPriorityOption, medium: t.mediumPriorityOption, low: t.lowPriorityOption }[p] || t.mediumPriorityOption; }
     function getPriorityClass(p) { return { high: 'priority-high', medium: 'priority-medium', low: 'priority-low' }[p] || 'priority-medium'; }
     function getStatusText(s) { const t = translations[currentLang]; return { todo: t.todoStatusOption, 'in-progress': t.progressStatusOption, done: t.doneStatusOption }[s] || t.todoStatusOption; }
     function getStatusClass(s) { return { todo: 'status-todo', 'in-progress': 'status-progress', done: 'status-done' }[s] || 'status-todo'; }
     function formatDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '-'; }
-    
+
     async function loadProjects() {
         try {
             const res = await fetch(`${API_URL}/projets`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -551,11 +409,27 @@
             const addSelect = document.getElementById('addProjetId');
             const editSelect = document.getElementById('editProjetId');
             filterSelect.innerHTML = `<option value="">${translations[currentLang].allProjectsOption}</option>`;
-            addSelect.innerHTML = ''; editSelect.innerHTML = '';
-            projects.forEach(p => { filterSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; addSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; editSelect.innerHTML += `<option value="${p._id}">${escapeHtml(p.nom)}</option>`; });
+            addSelect.innerHTML = '';
+            editSelect.innerHTML = '';
+            projects.forEach(p => {
+                const opt = `<option value="${p._id}">${escapeHtml(p.nom)}</option>`;
+                filterSelect.innerHTML += opt;
+                addSelect.innerHTML += opt;
+                editSelect.innerHTML += opt;
+            });
         } catch (error) { console.error('Erreur chargement projets:', error); }
     }
-    
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${API_URL}/utilisateurs`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const users = await res.json();
+            const options = `<option value="">-- Non assigné --</option>` + users.map(u => `<option value="${u._id}">${escapeHtml(u.name)}</option>`).join('');
+            document.getElementById('addAssignee').innerHTML = options;
+            document.getElementById('editAssignee').innerHTML = options;
+        } catch (e) { console.error('Erreur loadUsers:', e); }
+    }
+
     async function loadTasks() {
         try {
             const res = await fetch(`${API_URL}/taches`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -563,7 +437,17 @@
             applyFilters();
         } catch (error) { showNotification(translations[currentLang].errorLoad, 'error'); }
     }
-    
+
+    async function loadLabels() {
+        try {
+            const res = await fetch(`${API_URL}/etiquettes`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const labels = await res.json();
+            const options = labels.map(l => `<option value="${l._id}">● ${l.nom}</option>`).join('');
+            document.getElementById('addLabels').innerHTML = options;
+            document.getElementById('editLabels').innerHTML = options;
+        } catch (e) { console.error('Erreur loadLabels:', e); }
+    }
+
     function applyFilters() {
         const projetId = document.getElementById('filterProjet').value;
         const statut = document.getElementById('filterStatut').value;
@@ -576,7 +460,7 @@
         if (searchTerm) filtered = filtered.filter(t => t.titre?.toLowerCase().includes(searchTerm));
         renderTasks(filtered);
     }
-    
+
     function resetFilters() {
         document.getElementById('filterProjet').value = '';
         document.getElementById('filterStatut').value = '';
@@ -584,43 +468,67 @@
         document.getElementById('searchTitre').value = '';
         applyFilters();
     }
-    
+
     function renderTasks(tasks) {
         const tbody = document.getElementById('tasksList');
         const t = translations[currentLang];
         if (tasks.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">${t.noTasks}</td></tr>`; return; }
         tbody.innerHTML = tasks.map(task => {
             const project = projects.find(p => p._id === task.projetId);
-            return `<tr><td><strong>${escapeHtml(task.titre)}</strong><br><small style="color:var(--text-muted);">${escapeHtml(task.description?.substring(0, 50)) || ''}</small></td>
-                    <td>${project ? escapeHtml(project.nom) : '-'}</td>
-                    <td><i class="fas fa-user"></i> ${escapeHtml(task.assigne) || 'Non assigné'}</td>
-                    <td><span class="badge ${getPriorityClass(task.priorite)}">${getPriorityText(task.priorite)}</span></td>
-                    <td><span class="badge ${getStatusClass(task.status)}">${getStatusText(task.status)}</span></td>
-                    <td>${formatDate(task.echeance)}</td>
-                    <td><button class="btn btn-warning" onclick="editTask('${task._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button>
+            const assigneName = task.assigne ? (task.assigne.name || task.assigne) : 'Non assigné';
+            return `<tr>
+                <td><strong>${escapeHtml(task.titre)}</strong><br><small style="color:var(--text-muted);">${escapeHtml(task.description?.substring(0, 50)) || ''}</small></td>
+                <td>${project ? escapeHtml(project.nom) : '-'}</td>
+                <td><i class="fas fa-user"></i> ${escapeHtml(assigneName)}</td>
+                <td><span class="badge ${getPriorityClass(task.priorite)}">${getPriorityText(task.priorite)}</span></td>
+                <td><span class="badge ${getStatusClass(task.status)}">${getStatusText(task.status)}</span></td>
+                <td>${formatDate(task.echeance)}</td>
+                <td>
+                    <button class="btn btn-warning" onclick="editTask('${task._id}')" style="padding:5px 10px;"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger" onclick="deleteTask('${task._id}')" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
-                    ${task.status !== 'done' ? `<button class="btn btn-success" onclick="changeStatus('${task._id}', 'done')" style="padding:5px 10px;" title="${t.statusUpdated}"><i class="fas fa-check"></i></button>` : ''}</td></tr>`;
+                    ${task.status !== 'done' ? `<button class="btn btn-success" onclick="changeStatus('${task._id}', 'done')" style="padding:5px 10px;"><i class="fas fa-check"></i></button>` : ''}
+                </td>
+            </tr>`;
         }).join('');
     }
-    
+
     async function createTask(e) {
         e.preventDefault();
         const t = translations[currentLang];
-        const data = { titre: document.getElementById('addTitre').value.trim(), description: document.getElementById('addDescription').value, projetId: document.getElementById('addProjetId').value, assigne: document.getElementById('AddAssignee').value, priorite: document.getElementById('addPriorite').value, status: 'todo', echeance: document.getElementById('addEcheance').value || null };
+        const data = {
+            titre: document.getElementById('addTitre').value.trim(),
+            description: document.getElementById('addDescription').value,
+            projetId: document.getElementById('addProjetId').value,
+            assigne: document.getElementById('addAssignee').value || null,
+            priorite: document.getElementById('addPriorite').value,
+            status: 'todo',
+            labels: Array.from(document.getElementById('addLabels').selectedOptions).map(o => o.value),
+            echeance: document.getElementById('addEcheance').value || null,
+            dureeEstimee: document.getElementById('addDureeEstimee').value || null
+        };
         if (!data.titre) { showNotification(t.titleRequired, 'error'); return; }
         if (!data.projetId) { showNotification(t.projectRequired, 'error'); return; }
         try {
             const res = await fetch(`${API_URL}/taches`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
-            if (res.ok) { showNotification(t.taskCreated); closeAddModal(); loadTasks(); document.getElementById('addTaskForm').reset(); }
+            if (res.ok) { showNotification(t.taskCreated); closeAddModal(); loadTasks(); document.getElementById('addTaskForm').reset(); await loadUsers(); }
             else showNotification(t.errorCreate, 'error');
         } catch (error) { showNotification(t.errorConnection, 'error'); }
     }
-    
+
     async function updateTask(e) {
         e.preventDefault();
         const t = translations[currentLang];
         const id = document.getElementById('editTaskId').value;
-        const data = { titre: document.getElementById('editTitre').value.trim(), description: document.getElementById('editDescription').value, projetId: document.getElementById('editProjetId').value, assigne: document.getElementById('editAssignee').value, priorite: document.getElementById('editPriorite').value, status: document.getElementById('editStatut').value, echeance: document.getElementById('editEcheance').value || null };
+        const data = {
+            titre: document.getElementById('editTitre').value.trim(),
+            description: document.getElementById('editDescription').value,
+            projetId: document.getElementById('editProjetId').value,
+            assigne: document.getElementById('editAssignee').value || null,
+            priorite: document.getElementById('editPriorite').value,
+            status: document.getElementById('editStatut').value,
+            labels: Array.from(document.getElementById('editLabels').selectedOptions).map(o => o.value),
+            echeance: document.getElementById('editEcheance').value || null
+        };
         if (!data.titre) { showNotification(t.titleRequired, 'error'); return; }
         try {
             const res = await fetch(`${API_URL}/taches/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
@@ -628,7 +536,7 @@
             else showNotification(t.errorUpdate, 'error');
         } catch (error) { showNotification(t.errorConnection, 'error'); }
     }
-    
+
     async function editTask(id) {
         try {
             const res = await fetch(`${API_URL}/taches/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -638,7 +546,8 @@
                 document.getElementById('editTitre').value = task.titre;
                 document.getElementById('editDescription').value = task.description || '';
                 document.getElementById('editProjetId').value = task.projetId;
-                document.getElementById('editAssignee').value = task.assigne || '';
+                const assigneId = task.assigne?._id || task.assigne || '';
+                document.getElementById('editAssignee').value = assigneId;
                 document.getElementById('editPriorite').value = task.priorite || 'medium';
                 document.getElementById('editStatut').value = task.status || 'todo';
                 document.getElementById('editEcheance').value = task.echeance ? task.echeance.split('T')[0] : '';
@@ -646,7 +555,7 @@
             }
         } catch (error) { showNotification(translations[currentLang].errorLoad, 'error'); }
     }
-    
+
     async function deleteTask(id) {
         const t = translations[currentLang];
         if (!confirm(t.confirmDelete)) return;
@@ -656,7 +565,7 @@
             else showNotification(t.errorDelete, 'error');
         } catch (error) { showNotification(t.errorConnection, 'error'); }
     }
-    
+
     async function changeStatus(id, newStatus) {
         const t = translations[currentLang];
         try {
@@ -664,44 +573,97 @@
             if (res.ok) { showNotification(t.statusUpdated); loadTasks(); }
         } catch (error) { showNotification(t.errorStatus, 'error'); }
     }
-    
+
     function openAddModal() { document.getElementById('addTaskModal').style.display = 'flex'; }
     function closeAddModal() { document.getElementById('addTaskModal').style.display = 'none'; }
     function closeEditModal() { document.getElementById('editTaskModal').style.display = 'none'; }
-    
+
     async function loadUserInfo() {
         try {
             const res = await fetch(`${API_URL}/auth/profil`, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (res.ok) { const user = await res.json(); document.getElementById('userName').innerText = user.nom; document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤'; }
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById('userName').innerText = user.nom;
+                document.getElementById('userAvatar').innerText = user.nom?.charAt(0).toUpperCase() || '👤';
+            }
         } catch (error) {}
     }
-    
+
+    document.getElementById('btnEstimer').onclick = async () => {
+        const titre = document.getElementById('addTitre').value.trim();
+        const projetId = document.getElementById('addProjetId').value;
+
+        if (!titre) {
+            showNotification('Entrez d\'abord un titre', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnEstimer');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Estimation...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_URL}/taches/estimer`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    titre,
+                    description: document.getElementById('addDescription').value,
+                    priorite: document.getElementById('addPriorite').value,
+                    projetId
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                document.getElementById('estimationResult').style.display = 'inline';
+                document.getElementById('estimationResult').innerHTML = 
+                    `⏱️ Durée estimée : <strong>${data.dureeEstimee} heure(s)</strong>`;
+                document.getElementById('addDureeEstimee').value = data.dureeEstimee;
+                showNotification(`IA : ${data.dureeEstimee} heure(s) estimées`, 'success');
+            } else {
+                showNotification('Erreur estimation IA', 'error');
+            }
+        } catch (e) {
+            showNotification('Erreur connexion', 'error');
+        } finally {
+            btn.innerHTML = '<i class="fas fa-robot"></i> Estimer la durée';
+            btn.disabled = false;
+        }
+    };
+
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     function logout() { localStorage.clear(); window.location.href = 'login.html'; }
-    
+
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     document.getElementById('openAddTaskModal').onclick = openAddModal;
     document.getElementById('closeAddModal').onclick = closeAddModal;
     document.getElementById('closeEditModal').onclick = closeEditModal;
     document.getElementById('addTaskForm').onsubmit = createTask;
     document.getElementById('editTaskForm').onsubmit = updateTask;
-    
+
     initDarkMode();
     updateTexts();
-    
+
     document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
     document.getElementById('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
-    
+
     window.editTask = editTask;
     window.deleteTask = deleteTask;
     window.changeStatus = changeStatus;
     window.applyFilters = applyFilters;
     window.resetFilters = resetFilters;
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-    
+
     loadUserInfo();
     loadProjects();
     loadTasks();
+    loadUsers();
+    loadLabels();
 </script>
 </body>
 </html>

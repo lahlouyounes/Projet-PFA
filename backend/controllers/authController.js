@@ -37,6 +37,47 @@ exports.login = async (req, res) => {
     }
 };
 
+exports.register = async (req, res) => {
+    try {
+        const { nom, email, password } = req.body;
+
+        // Vérifier si l'email existe déjà
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Cet email est déjà utilisé' 
+            });
+        }
+
+        // Créer le compte
+        const user = await User.create({
+            name: nom,
+            email,
+            password,
+            role: 'user',
+            avatar: nom?.charAt(0).toUpperCase() || 'U'
+        });
+
+        // Générer le token directement
+        const token = generateToken(user._id);
+
+        res.status(201).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                avatar: user.avatar
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // ✅ Get profile
 exports.getProfile = async (req, res) => {
     try {

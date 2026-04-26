@@ -6,9 +6,6 @@
     <title>Connexion | CollabFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ============================================
-           VARIABLES LIGHT MODE (DÉFAUT)
-        ============================================ */
         :root {
             --bg-primary: #ffffff;
             --text-primary: #333333;
@@ -24,9 +21,6 @@
             --demo-bg: #f0f0f0;
         }
 
-        /* ============================================
-           DARK MODE VARIABLES
-        ============================================ */
         [data-theme="dark"] {
             --bg-primary: #1a1a2e;
             --text-primary: #f0f3f8;
@@ -43,63 +37,57 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%); 
-            min-height: 100vh; 
-            display: flex; 
-            justify-content: center; 
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
             align-items: center;
             transition: background 0.3s ease;
         }
-        
-        .login-container { 
-            background: var(--card-bg); 
-            border-radius: 20px; 
-            padding: 40px; 
-            width: 400px; 
-            max-width: 90%; 
+
+        .login-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            max-width: 90%;
             box-shadow: var(--shadow);
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        .logo { 
-            text-align: center; 
-            font-size: 2rem; 
-            font-weight: bold; 
+
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 30px;
         }
-        
+
         .logo i {
             background: none;
             -webkit-background-clip: unset;
             background-clip: unset;
             color: var(--gradient-start);
         }
-        
-        h2 { 
-            text-align: center; 
-            margin-bottom: 30px; 
-            color: var(--text-primary);
-        }
-        
+
         .form-group { margin-bottom: 20px; }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 8px; 
-            color: var(--text-secondary); 
-            font-weight: 600; 
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
-        .form-group input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid var(--border-color); 
-            border-radius: 10px; 
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
             font-size: 1rem;
             background: var(--input-bg);
             color: var(--text-primary);
@@ -113,54 +101,53 @@
             color: var(--text-secondary);
             opacity: 0.7;
         }
-        
-        .btn-login { 
-            width: 100%; 
-            padding: 12px; 
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%); 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            font-size: 1rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s; 
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .btn-login:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 5px 15px rgba(102,126,234,0.4); 
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
         }
-        
-        .error-message { 
-            background: var(--error-bg); 
-            color: var(--error-color); 
-            padding: 10px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            display: none; 
+
+        .error-message {
+            background: var(--error-bg);
+            color: var(--error-color);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
         }
-        
-        .demo-info { 
-            text-align: center; 
-            margin-top: 20px; 
-            font-size: 0.8rem; 
-            color: var(--text-secondary); 
+
+        .demo-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
-        .demo-info code { 
-            background: var(--demo-bg); 
-            padding: 2px 6px; 
-            border-radius: 4px; 
+        .demo-info code {
+            background: var(--demo-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
             color: var(--text-primary);
         }
-        
-        .loading { 
-            display: none; 
-            text-align: center; 
-            margin-top: 10px; 
-            color: var(--gradient-start); 
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: var(--gradient-start);
         }
-        
-        /* Dark Mode Toggle Button */
+
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -181,13 +168,10 @@
             transform: scale(1.05);
             border-color: var(--gradient-start);
         }
-        .theme-toggle i {
-            font-size: 1.1rem;
-        }
+        .theme-toggle i { font-size: 1.1rem; }
         .theme-toggle .fa-sun { color: #f59e0b; }
         .theme-toggle .fa-moon { color: #8b5cf6; }
-        
-        /* Language Selector */
+
         .lang-selector {
             position: fixed;
             top: 20px;
@@ -202,28 +186,13 @@
             transition: all 0.3s;
             z-index: 1000;
         }
-        .lang-selector:hover {
-            border-color: var(--gradient-start);
-        }
-        .lang-selector option {
-            background: var(--card-bg);
-            color: var(--text-primary);
-        }
-        
-        /* RTL Support */
-        body.rtl {
-            direction: rtl;
-        }
-        body.rtl .theme-toggle {
-            right: auto;
-            left: 20px;
-        }
-        body.rtl .lang-selector {
-            left: auto;
-            right: 20px;
-        }
-        
-        /* Theme Notification */
+        .lang-selector:hover { border-color: var(--gradient-start); }
+        .lang-selector option { background: var(--card-bg); color: var(--text-primary); }
+
+        body.rtl { direction: rtl; }
+        body.rtl .theme-toggle { right: auto; left: 20px; }
+        body.rtl .lang-selector { left: auto; right: 20px; }
+
         .theme-notification {
             position: fixed;
             bottom: 20px;
@@ -243,53 +212,118 @@
             85% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(20px); }
         }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
     </style>
 </head>
 <body>
-    <!-- Dark Mode Toggle Button -->
     <div class="theme-toggle" id="darkModeToggle">
         <i class="fas fa-moon"></i>
-        <span id="themeText">Dark</span>
+        <span id="themeText">Sombre</span>
     </div>
-    
-    <!-- Language Selector -->
+
     <select id="languageSelect" class="lang-selector">
         <option value="fr">🇫🇷 Français</option>
         <option value="en">🇬🇧 English</option>
         <option value="ar">🇸🇦 العربية</option>
     </select>
-    
+
     <div class="login-container">
         <div class="logo"><i class="fas fa-trello"></i> <span id="logoText">CollabFlow</span></div>
-        <h2 id="loginTitle">Connexion</h2>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> <span id="tabLoginText">Connexion</span>
+            </button>
+            <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> <span id="tabRegisterText">Inscription</span>
+            </button>
+        </div>
+
         <div id="errorMessage" class="error-message"></div>
-        <form id="loginForm">
-            <div class="form-group">
-                <label id="emailLabel"><i class="fas fa-envelope"></i> Email</label>
-                <input type="email" id="email" required placeholder="admin@collabflow.com" value="admin@collabflow.com">
+
+        <!-- Formulaire Connexion -->
+        <div id="sectionLogin" class="form-section active">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label id="emailLabel"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="email" required placeholder="admin@collabflow.com" value="admin@collabflow.com">
+                </div>
+                <div class="form-group">
+                    <label id="passwordLabel"><i class="fas fa-lock"></i> Mot de passe</label>
+                    <input type="password" id="password" required placeholder="••••••••" value="admin123">
+                </div>
+                <button type="submit" class="btn-login" id="loginBtn">Se connecter</button>
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span id="loadingText">Connexion en cours...</span>
+                </div>
+            </form>
+            <div class="demo-info">
+                <i class="fas fa-flask"></i> <span id="demoText">Comptes démo:</span><br>
+                <code id="demoAdmin">admin@collabflow.com</code> / <code id="demoAdminPwd">admin123</code><br>
+                <code id="demoUser">user@collabflow.com</code> / <code id="demoUserPwd">user123</code>
             </div>
-            <div class="form-group">
-                <label id="passwordLabel"><i class="fas fa-lock"></i> Mot de passe</label>
-                <input type="password" id="password" required placeholder="••••••••" value="admin123">
-            </div>
-            <button type="submit" class="btn-login" id="loginBtn">Se connecter</button>
-            <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> <span id="loadingText">Connexion en cours...</span></div>
-        </form>
-        <div class="demo-info">
-            <i class="fas fa-flask"></i> <span id="demoText">Comptes démo:</span><br>
-            <code id="demoAdmin">admin@collabflow.com</code> / <code id="demoAdminPwd">admin123</code><br>
-            <code id="demoUser">user@collabflow.com</code> / <code id="demoUserPwd">user123</code>
+        </div>
+
+        <!-- Formulaire Inscription -->
+        <div id="sectionRegister" class="form-section">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> <span id="regNomLabel">Nom complet</span></label>
+                    <input type="text" id="regNom" required placeholder="Ex: Karim Benali">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="regEmail" required placeholder="karim@exemple.com">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> <span id="regPwdLabel">Mot de passe</span></label>
+                    <input type="password" id="regPassword" required placeholder="Minimum 6 caractères">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> <span id="regConfirmLabel">Confirmer le mot de passe</span></label>
+                    <input type="password" id="regConfirm" required placeholder="Répétez le mot de passe">
+                </div>
+                <button type="submit" class="btn-login" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> <span id="registerBtnText">Créer mon compte</span>
+                </button>
+                <div id="loadingRegister" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> <span id="loadingRegisterText">Création en cours...</span>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // TRADUCTIONS
-        // ============================================
         const translations = {
             fr: {
                 logoText: "CollabFlow",
-                loginTitle: "Connexion",
+                tabLoginText: "Connexion",
+                tabRegisterText: "Inscription",
                 emailLabel: "Email",
                 passwordLabel: "Mot de passe",
                 loginBtn: "Se connecter",
@@ -300,12 +334,22 @@
                 demoUser: "user@collabflow.com",
                 demoUserPwd: "user123",
                 themeText: "Sombre",
+                regNomLabel: "Nom complet",
+                regPwdLabel: "Mot de passe",
+                regConfirmLabel: "Confirmer le mot de passe",
+                registerBtnText: "Créer mon compte",
+                loadingRegisterText: "Création en cours...",
                 errorConnection: "Erreur de connexion au serveur. Vérifiez que le backend tourne sur ",
-                errorCredentials: "Email ou mot de passe incorrect"
+                errorCredentials: "Email ou mot de passe incorrect",
+                errorFieldsRequired: "Tous les champs sont obligatoires",
+                errorPasswordLength: "Le mot de passe doit contenir au moins 6 caractères",
+                errorPasswordMatch: "Les mots de passe ne correspondent pas",
+                errorRegister: "Erreur lors de la création du compte"
             },
             en: {
                 logoText: "CollabFlow",
-                loginTitle: "Login",
+                tabLoginText: "Login",
+                tabRegisterText: "Register",
                 emailLabel: "Email",
                 passwordLabel: "Password",
                 loginBtn: "Sign in",
@@ -316,12 +360,22 @@
                 demoUser: "user@collabflow.com",
                 demoUserPwd: "user123",
                 themeText: "Dark",
+                regNomLabel: "Full name",
+                regPwdLabel: "Password",
+                regConfirmLabel: "Confirm password",
+                registerBtnText: "Create account",
+                loadingRegisterText: "Creating...",
                 errorConnection: "Connection error. Make sure the backend is running on ",
-                errorCredentials: "Invalid email or password"
+                errorCredentials: "Invalid email or password",
+                errorFieldsRequired: "All fields are required",
+                errorPasswordLength: "Password must be at least 6 characters",
+                errorPasswordMatch: "Passwords do not match",
+                errorRegister: "Error creating account"
             },
             ar: {
                 logoText: "كولاب فلو",
-                loginTitle: "تسجيل الدخول",
+                tabLoginText: "دخول",
+                tabRegisterText: "تسجيل",
                 emailLabel: "البريد الإلكتروني",
                 passwordLabel: "كلمة المرور",
                 loginBtn: "دخول",
@@ -332,17 +386,23 @@
                 demoUser: "user@collabflow.com",
                 demoUserPwd: "user123",
                 themeText: "داكن",
-                errorConnection: "خطأ في الاتصال بالخادم. تأكد من أن الخادم الخلفي يعمل على ",
-                errorCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+                regNomLabel: "الاسم الكامل",
+                regPwdLabel: "كلمة المرور",
+                regConfirmLabel: "تأكيد كلمة المرور",
+                registerBtnText: "إنشاء حساب",
+                loadingRegisterText: "جاري الإنشاء...",
+                errorConnection: "خطأ في الاتصال بالخادم. تأكد من أن الخادم يعمل على ",
+                errorCredentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+                errorFieldsRequired: "جميع الحقول مطلوبة",
+                errorPasswordLength: "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+                errorPasswordMatch: "كلمات المرور غير متطابقة",
+                errorRegister: "خطأ في إنشاء الحساب"
             }
         };
-        
+
         let currentLang = localStorage.getItem('language') || 'fr';
         let currentTheme = localStorage.getItem('theme') || 'light';
-        
-        // ============================================
-        // DARK MODE FUNCTIONS
-        // ============================================
+
         function initDarkMode() {
             if (currentTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -352,13 +412,11 @@
                 document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-moon"></i> <span id="themeText">' + translations[currentLang].themeText + '</span>';
             }
         }
-        
+
         function toggleDarkMode() {
             const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            
-            const themeText = document.getElementById('themeText');
             if (newTheme === 'dark') {
                 document.getElementById('darkModeToggle').innerHTML = '<i class="fas fa-sun"></i> <span id="themeText">' + translations[currentLang].themeText + '</span>';
                 showThemeNotification('🌙 Mode sombre activé');
@@ -367,7 +425,7 @@
                 showThemeNotification('☀️ Mode clair activé');
             }
         }
-        
+
         function showThemeNotification(message) {
             const notification = document.createElement('div');
             notification.className = 'theme-notification';
@@ -375,14 +433,12 @@
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 2000);
         }
-        
-        // ============================================
-        // LANGUAGE FUNCTIONS
-        // ============================================
+
         function updateTexts() {
             const t = translations[currentLang];
             document.getElementById('logoText').innerText = t.logoText;
-            document.getElementById('loginTitle').innerText = t.loginTitle;
+            document.getElementById('tabLoginText').innerText = t.tabLoginText;
+            document.getElementById('tabRegisterText').innerText = t.tabRegisterText;
             document.getElementById('emailLabel').innerHTML = '<i class="fas fa-envelope"></i> ' + t.emailLabel;
             document.getElementById('passwordLabel').innerHTML = '<i class="fas fa-lock"></i> ' + t.passwordLabel;
             document.getElementById('loginBtn').innerText = t.loginBtn;
@@ -392,45 +448,60 @@
             document.getElementById('demoAdminPwd').innerText = t.demoAdminPwd;
             document.getElementById('demoUser').innerText = t.demoUser;
             document.getElementById('demoUserPwd').innerText = t.demoUserPwd;
-            
-            // Mettre à jour le texte du bouton dark mode
+            document.getElementById('regNomLabel').innerText = t.regNomLabel;
+            document.getElementById('regPwdLabel').innerText = t.regPwdLabel;
+            document.getElementById('regConfirmLabel').innerText = t.regConfirmLabel;
+            document.getElementById('registerBtnText').innerText = t.registerBtnText;
+            document.getElementById('loadingRegisterText').innerText = t.loadingRegisterText;
+
             const themeText = document.getElementById('themeText');
             if (themeText) themeText.innerText = t.themeText;
-            
+
             // RTL pour l'arabe
             if (currentLang === 'ar') {
                 document.body.classList.add('rtl');
-                document.getElementById('loginContainer').style.direction = 'rtl';
+                // CORRECTION : utiliser querySelector au lieu de getElementById('loginContainer')
+                document.querySelector('.login-container').style.direction = 'rtl';
             } else {
                 document.body.classList.remove('rtl');
+                document.querySelector('.login-container').style.direction = 'ltr';
             }
         }
-        
+
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('language', lang);
             document.getElementById('languageSelect').value = lang;
             updateTexts();
-            // Mettre à jour le texte du bouton dark mode après changement de langue
-            const themeText = document.getElementById('themeText');
-            if (themeText) themeText.innerText = translations[currentLang].themeText;
         }
-        
-        // ============================================
-        // LOGIN FUNCTIONS
-        // ============================================
+
+        function switchTab(tab) {
+            document.getElementById('errorMessage').style.display = 'none';
+            if (tab === 'login') {
+                document.getElementById('sectionLogin').classList.add('active');
+                document.getElementById('sectionRegister').classList.remove('active');
+                document.getElementById('tabLogin').classList.add('active');
+                document.getElementById('tabRegister').classList.remove('active');
+            } else {
+                document.getElementById('sectionRegister').classList.add('active');
+                document.getElementById('sectionLogin').classList.remove('active');
+                document.getElementById('tabRegister').classList.add('active');
+                document.getElementById('tabLogin').classList.remove('active');
+            }
+        }
+
         const API_URL = 'http://localhost:3002/api';
-        
+
         document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('errorMessage');
-            
+
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
-            
+
             try {
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
@@ -438,7 +509,7 @@
                     body: JSON.stringify({ email, password })
                 });
                 const data = await response.json();
-                
+
                 if (response.ok && data.token) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
@@ -449,19 +520,71 @@
                 }
             } catch (error) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = `❌ ${translations[currentLang].errorConnection} ${API_URL}`;
+                errorDiv.innerHTML = `❌ ${translations[currentLang].errorConnection}${API_URL}`;
             } finally {
                 loadingDiv.style.display = 'none';
             }
         };
-        
-        // Initialisation
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const nom = document.getElementById('regNom').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            const errorDiv = document.getElementById('errorMessage');
+            const loadingDiv = document.getElementById('loadingRegister');
+            const t = translations[currentLang];
+
+            if (!nom || !email || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `❌ ${t.errorFieldsRequired}`;
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `❌ ${t.errorPasswordLength}`;
+                return;
+            }
+            if (password !== confirm) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `❌ ${t.errorPasswordMatch}`;
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nom, email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'index.html';
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `❌ ${data.message || t.errorRegister}`;
+                }
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `❌ ${t.errorConnection}${API_URL}`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        };
+
         initDarkMode();
         updateTexts();
-        
-        // Event Listeners
+
         document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
         document.getElementById('languageSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+        document.getElementById('languageSelect').value = currentLang;
     </script>
 </body>
 </html>

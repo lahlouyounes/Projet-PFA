@@ -5,8 +5,13 @@ const auth = require('../middleware/auth');
 
 router.use(auth);
 router.get('/', userController.getUsers);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
-
+const adminOnly = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Réservé aux administrateurs' });
+    }
+    next();
+};
+router.post('/', adminOnly, userController.createUser);
+router.put('/:id', adminOnly, userController.updateUser);
+router.delete('/:id', adminOnly, userController.deleteUser);
 module.exports = router;

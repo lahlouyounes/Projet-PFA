@@ -393,6 +393,10 @@
             <div class="nav-link" onclick="window.location.href='roles.html'"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></div>
             <div class="nav-link" onclick="window.location.href='etiquette.html'"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></div>
             <div class="nav-link active" onclick="window.location.href='profil.html'"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></div>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link">
+                <i class="fas fa-users"></i><span>Vue Membres</span>
+            </a>
         </div>
     </div>
     <div class="main-content">
@@ -850,11 +854,14 @@
             document.getElementById('companyCompletedTasks').innerText = completed;
             document.getElementById('companyProgress').innerText = avgProgress;
             document.getElementById('companyUsers').innerText = users.length;
-            const younesTasks = tasks.filter(t => t.assigne === 'Younes').length || Math.floor(completed * 0.45);
-            const inassTasks = tasks.filter(t => t.assigne === 'Inass').length || Math.floor(completed * 0.35);
+            const younesTasks = tasks.filter(t => t.assigne?.name === 'Younes' || t.assigne === 'Younes').length;
+            const inassTasks = tasks.filter(t => t.assigne?.name === 'Inass' || t.assigne === 'Inass').length;
             document.getElementById('younesTasks').innerText = younesTasks || 42;
             document.getElementById('inassTasks').innerText = inassTasks || 38;
-            const userTasks = tasks.filter(t => t.assigne === currentUser.name);
+            const userTasks = tasks.filter(t =>
+                t.assigne?._id === currentUser.id ||
+                t.assigne === currentUser.id
+            );            
             const completedByUser = userTasks.filter(t => t.status === 'done').length;
             const rank = completed > 0 ? Math.max(1, Math.floor((completedByUser / completed) * 10)) : 1;
             document.getElementById('statProjects').innerText = projects.length;

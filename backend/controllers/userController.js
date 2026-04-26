@@ -12,15 +12,20 @@ exports.getUsers = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password || 'user123', 10);
         const user = await User.create({
             name: req.body.name,
             email: req.body.email,
-            password: hashedPassword,
+            password: req.body.password || 'user123',
             role: req.body.role || 'user',
             avatar: req.body.name?.charAt(0).toUpperCase() || 'U'
         });
-        res.status(201).json({ id: user._id, name: user.name, email: user.email, role: user.role });
+        res.status(201).json({ 
+            _id: user._id, 
+            id: user._id, 
+            name: user.name, 
+            email: user.email, 
+            role: user.role 
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

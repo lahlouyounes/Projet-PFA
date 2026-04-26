@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const mongoose = require('mongoose');
+const auth = require('./middleware/auth');
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/taches', require('./routes/taskRoutes'));
 app.use('/api/utilisateurs', require('./routes/userRoutes'));
 app.use('/api/roles', require('./routes/roleRoutes'));
 app.use('/api/etiquettes', require('./routes/labelRoutes'));
+app.use('/api/logs', require('./routes/logRoutes'));
 
 // Route test
 app.get('/api/test', (req, res) => {
@@ -34,6 +36,28 @@ app.get('/api/test', (req, res) => {
         timestamp: new Date(),
         status: 'online'
     });
+});
+
+// ✅ Route de nettoyage des anciennes tâches corrompues
+app.post('/api/cleanup', auth, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Réservé aux administrateurs' });
+        }
+        const Task = require('./models/Task');
+        const tasks = await Task.find({});
+        let count = 0;
+        for (const task of tasks) {
+            if (task.assigne && !mongoose.Types.ObjectId.isValid(task.assigne)) {
+                task.assigne = null;
+                await task.save();
+                count++;
+            }
+        }
+        res.json({ success: true, nettoyees: count });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 // Routes HTML
@@ -47,55 +71,21 @@ app.get('/utilisateurs.html', (req, res) => res.sendFile(path.join(__dirname, '.
 app.get('/roles.html', (req, res) => res.sendFile(path.join(__dirname, '../frontend/roles.html')));
 app.get('/etiquette.html', (req, res) => res.sendFile(path.join(__dirname, '../frontend/etiquette.html')));
 app.get('/profil.html', (req, res) => res.sendFile(path.join(__dirname, '../frontend/profil.html')));
+app.get('/logs.html', (req, res) => res.sendFile(path.join(__dirname, '../frontend/logs.html')));
+app.get('/membres.html', (req, res) => res.sendFile(path.join(__dirname, '../frontend/membres.html')));
 
-// Initialisation des données par défaut
+// Initialisation - SEULEMENT les comptes et étiquettes, PAS les tâches corrompues
 const initData = async () => {
     try {
-        const Project = require('./models/Project');
-        const Task = require('./models/Task');
         const User = require('./models/User');
+        const Label = require('./models/Label');
         const authController = require('./controllers/authController');
         
         // Créer admin
         await authController.initAdmin();
         
-        // Créer des projets
-        const projectCount = await Project.countDocuments();
-        if (projectCount === 0) {
-            await Project.create([
-                { nom: 'Application Mobile', description: 'Développement React Native', avancement: 65, statut: 'actif' },
-                { nom: 'Dashboard Analytics', description: 'Tableau de bord avec graphiques', avancement: 30, statut: 'actif' },
-                { nom: 'Refacto UI', description: 'Refonte interface utilisateur', avancement: 100, statut: 'termine' },
-                { nom: 'API Gateway', description: 'Mise en place du proxy API', avancement: 45, statut: 'actif' }
-            ]);
-            console.log('✅ 4 projets créés');
-        }
-        
-        // Créer des tâches
-        const taskCount = await Task.countDocuments();
-        if (taskCount === 0) {
-            await Task.create([
-                { titre: 'Concevoir wireframes', status: 'done', priorite: 'high', assigne: 'Younes' },
-                { titre: 'Implémenter JWT', status: 'in-progress', priorite: 'high', assigne: 'Younes' },
-                { titre: 'Drag & Drop Kanban', status: 'done', priorite: 'medium', assigne: 'Inass' },
-                { titre: 'Tests unitaires', status: 'todo', priorite: 'medium', assigne: 'Younes' },
-                { titre: 'Design UI/UX', status: 'in-progress', priorite: 'high', assigne: 'Inass' },
-                { titre: 'Documentation API', status: 'todo', priorite: 'low', assigne: 'Inass' },
-                { titre: 'Optimisation performances', status: 'todo', priorite: 'medium', assigne: 'Younes' },
-                { titre: 'Mise en production', status: 'todo', priorite: 'high', assigne: 'Younes' }
-            ]);
-            console.log('✅ 8 tâches créées');
-        }
-        
-        // Créer des utilisateurs
-        const userCount = await User.countDocuments();
-        if (userCount <= 2) {
-            await User.create([
-                { name: 'Younes', email: 'younes@collabflow.com', password: 'younes123', role: 'admin', avatar: 'Y' },
-                { name: 'Inass', email: 'inass@collabflow.com', password: 'inass123', role: 'admin', avatar: 'I' }
-            ]);
-            console.log('✅ Utilisateurs Younes et Inass créés');
-        }
+        // Créer étiquettes par défaut
+        await Label.initDefaultLabels();
         
         console.log('✅ Données initialisées avec succès');
     } catch (error) {
@@ -117,7 +107,6 @@ app.listen(PORT, () => {
 ║                                                                ║
 ║   🌐 Application: http://localhost:${PORT}                      ║
 ║   📡 API: http://localhost:${PORT}/api                          ║
-║   🧪 Test: http://localhost:${PORT}/api/test                    ║
 ║                                                                ║
 ║   🔑 Comptes de test:                                          ║
 ║   - admin@collabflow.com / admin123                            ║

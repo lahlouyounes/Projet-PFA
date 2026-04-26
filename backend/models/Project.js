@@ -7,6 +7,7 @@ const projectSchema = new mongoose.Schema({
     avancement: { type: Number, default: 0, min: 0, max: 100 },
     dateFin: { type: Date },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    membres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

@@ -333,6 +333,10 @@
             <a href="roles.html" class="nav-link"><i class="fas fa-tag"></i><span id="navRoles">Rôles</span></a>
             <a href="etiquette.html" class="nav-link"><i class="fas fa-tags"></i><span id="navLabels">Étiquettes</span></a>
             <a href="profil.html" class="nav-link"><i class="fas fa-user-circle"></i><span id="navProfile">Profil</span></a>
+            <a href="logs.html" class="nav-link"><i class="fas fa-history"></i><span>Journal d'audit</span></a>
+            <a href="membres.html" class="nav-link">
+                <i class="fas fa-users"></i><span>Vue Membres</span>
+            </a>
         </div>
     </div>
     <div class="main-content">
@@ -411,13 +415,34 @@
                 <option value="termine">Terminé</option>
                 <option value="archive">Archivé</option>
             </select>
-            <input type="number" id="addAvancement" placeholder="Avancement (0-100)" min="0" max="100" value="0">
+            <div style="display:flex; align-items:center; gap:15px; margin:10px 0 20px;">
+                <input type="range" id="addAvancement" min="0" max="100" value="0"
+                    style="flex:1; accent-color:#667eea; cursor:pointer;"
+                    oninput="document.getElementById('addAvancementValue').innerText = this.value + '%'">
+                <span id="addAvancementValue" style="font-weight:600; color:#667eea; min-width:40px;">0%</span>
+            </div>            
             <input type="date" id="addDateFin">
             <div class="modal-buttons">
                 <button type="button" class="btn btn-secondary" id="closeAddModal"><span id="cancelAddText">Annuler</span></button>
                 <button type="submit" class="btn btn-primary"><span id="createText">Créer</span></button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Invitation -->
+<div id="invitationModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-user-plus"></i> Inviter un membre</h3>
+        <input type="hidden" id="invitationProjetId">
+        <label style="color:var(--text-secondary); font-size:14px;">Email de l'utilisateur</label>
+        <input type="email" id="invitationEmail" placeholder="email@exemple.com">
+        <div class="modal-buttons">
+            <button type="button" class="btn btn-secondary" onclick="fermerModalInvitation()">Annuler</button>
+            <button type="button" class="btn btn-primary" onclick="inviterMembre()">
+                <i class="fas fa-paper-plane"></i> Inviter
+            </button>
+        </div>
     </div>
 </div>
 
@@ -434,7 +459,12 @@
                 <option value="termine">Terminé</option>
                 <option value="archive">Archivé</option>
             </select>
-            <input type="number" id="editAvancement" placeholder="Avancement (0-100)" min="0" max="100">
+            <div style="display:flex; align-items:center; gap:15px; margin:10px 0 20px;">
+                <input type="range" id="editAvancement" min="0" max="100" value="0"
+                    style="flex:1; accent-color:#667eea; cursor:pointer;"
+                    oninput="document.getElementById('editAvancementValue').innerText = this.value + '%'">
+                <span id="editAvancementValue" style="font-weight:600; color:#667eea; min-width:40px;">0%</span>
+            </div>            
             <input type="date" id="editDateFin">
             <div class="modal-buttons">
                 <button type="button" class="btn btn-secondary" id="closeEditModal"><span id="cancelEditText">Annuler</span></button>
@@ -706,15 +736,18 @@
     
     function renderProjects(projects) {
         const tbody = document.getElementById('projectsList');
-        if (!projects.length) { tbody.innerHTML = `<td><td colspan="6">${translations[currentLang].noProjects || 'Aucun projet'}</td></tr>`; return; }
-        tbody.innerHTML = projects.map(p => `
+        if (!projects.length) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${translations[currentLang].noProjects || 'Aucun projet'}</td></tr>`; return; }        tbody.innerHTML = projects.map(p => `
             <tr>
                 <td><strong>${escapeHtml(p.nom)}</strong></td>
                 <td>${escapeHtml(p.description) || '-'}</td>
                 <td><div class="progress-bar"><div class="progress-fill" style="width:${p.avancement||0}%"></div> ${p.avancement||0}%</div></td>
                 <td><span class="badge ${getStatusClass(p.statut)}">${getStatusText(p.statut)}</span></td>
                 <td>${formatDate(p.dateFin)}</td>
-                <td><button class="btn btn-warning" onclick="editProject('${p._id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="deleteProject('${p._id}')"><i class="fas fa-trash"></i></button></td>
+                <td>
+                    <button class="btn btn-primary" onclick="ouvrirModalInvitation('${p._id}')"><i class="fas fa-user-plus"></i></button>
+                    <button class="btn btn-warning" onclick="editProject('${p._id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger" onclick="deleteProject('${p._id}')"><i class="fas fa-trash"></i></button>
+                </td>            
             </tr>
         `).join('');
     }
@@ -775,6 +808,7 @@
                 document.getElementById('editDescription').value = p.description || '';
                 document.getElementById('editStatut').value = p.statut || 'actif';
                 document.getElementById('editAvancement').value = p.avancement || 0;
+                document.getElementById('editAvancementValue').innerText = (p.avancement || 0) + '%';
                 document.getElementById('editDateFin').value = p.dateFin ? p.dateFin.split('T')[0] : '';
                 document.getElementById('editProjectModal').style.display = 'flex';
             } else showNotification(translations[currentLang].errorLoad, 'error');
@@ -823,6 +857,50 @@
     window.applyFilters = applyFilters;
     window.resetFilters = resetFilters;
     window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+
+    function ouvrirModalInvitation(projetId) {
+        document.getElementById('invitationProjetId').value = projetId;
+        document.getElementById('invitationEmail').value = '';
+        document.getElementById('invitationModal').style.display = 'flex';
+    }
+
+    function fermerModalInvitation() {
+        document.getElementById('invitationModal').style.display = 'none';
+    }
+
+    async function inviterMembre() {
+        const projetId = document.getElementById('invitationProjetId').value;
+        const email = document.getElementById('invitationEmail').value.trim();
+
+        if (!email) {
+            showNotification('Entrez un email', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/projets/${projetId}/membres`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ email })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                showNotification(data.message, 'success');
+                fermerModalInvitation();
+            } else {
+                showNotification(data.error, 'error');
+            }
+        } catch (e) {
+            showNotification('Erreur serveur', 'error');
+        }
+    }
+
+    window.ouvrirModalInvitation = ouvrirModalInvitation;
     
     loadUserInfo();
     loadProjects();

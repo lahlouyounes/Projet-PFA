@@ -2,16 +2,13 @@ const checkPermission = (resource, action) => {
     return async (req, res, next) => {
         try {
             const Role = require('../models/Role');
-            const role = await Role.findOne({ name: req.user.role });
-            
+            const role = await Role.findOne({ nom: req.user.role });            
             if (!role) {
                 return res.status(403).json({ message: 'Rôle non trouvé' });
             }
             
-            const hasPermission = role.permissions.some(p => 
-                (p.resource === '*' || p.resource === resource) && 
-                (p.action === 'manage' || p.action === action)
-            );
+            const hasPermission = role.permissions.includes('*') ||
+                role.permissions.includes(permission);
             
             if (!hasPermission && req.user.role !== 'admin') {
                 return res.status(403).json({ message: `Permission refusée: ${action} sur ${resource}` });
